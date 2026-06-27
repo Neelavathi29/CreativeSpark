@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Valuation Calculator{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h3><i class="bi bi-calculator me-2 text-warning"></i>Startup Valuation Calculator</h3>
+            <form method="post" class="mt-3">{% csrf_token %}
+                <div class="mb-3"><label class="form-label">Select Your Startup Idea</label><select name="idea" class="form-control" required><option value="">Choose...</option>{% for i in ideas %}<option value="{{ i.pk }}">{{ i.startup_name }}</option>{% endfor %}</select></div>
+                <button type="submit" class="btn btn-warning">Calculate Valuation</button>
+            </form>
+        </div>
+        {% if result %}
+        <div class="glass-card p-4 text-center">
+            <h5>Estimated Valuation</h5>
+            <h2 class="text-warning display-4">${{ result|floatformat:0 }}</h2>
+            <p class="text-muted">Based on your idea, team, and evaluation scores</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

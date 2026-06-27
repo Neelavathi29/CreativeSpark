@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Hall of Fame - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4 text-center">
+        <i class="bi bi-trophy-fill me-2 text-warning"></i>Hall of Fame
+    </h3>
+
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i>Top 10 Innovators - All Time</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">#</th>
+                                    <th>User</th>
+                                    <th>Level</th>
+                                    <th>Total XP</th>
+                                    <th>Ideas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in top_all_time %}
+                                <tr class="{% if forloop.counter <= 3 %}table-warning{% endif %}">
+                                    <td class="ps-4">
+                                        {% if forloop.counter == 1 %}<i class="bi bi-trophy-fill text-warning"></i>
+                                        {% elif forloop.counter == 2 %}<i class="bi bi-trophy-fill text-secondary"></i>
+                                        {% elif forloop.counter == 3 %}<i class="bi bi-trophy-fill text-danger-emphasis"></i>
+                                        {% else %}{{ forloop.counter }}{% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if entry.user.profile_picture %}
+                                            <img src="{{ entry.user.profile_picture.url }}" class="rounded-circle me-2" width="32" height="32">
+                                            {% else %}
+                                            <i class="bi bi-person-circle fs-4 me-2 text-muted"></i>
+                                            {% endif %}
+                                            <strong>{{ entry.user.username }}</strong>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary">Level {{ entry.level }}</span></td>
+                                    <td><strong>{{ entry.total_xp }}</strong> XP</td>
+                                    <td>{{ entry.ideas_approved }}/{{ entry.ideas_submitted }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">No data yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm glass-card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-fire me-2"></i>This Month's Top Performers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for entry in top_month %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ forloop.counter }}. {{ entry.user.username }}</strong>
+                                <br><small class="text-muted">Level {{ entry.level }}</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">{{ entry.total_xp }} XP</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center py-3">No data this month</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm glass-card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-award me-2"></i>Recent Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for ub in recent_badges %}
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="bi {{ ub.badge.icon }} fs-3 me-3 text-warning"></i>
+                            <div>
+                                <strong>{{ ub.user.username }}</strong> earned <strong>{{ ub.badge.name }}</strong>
+                                <br><small class="text-muted">{{ ub.earned_at|timesince }} ago</small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center py-3">No recent achievements</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

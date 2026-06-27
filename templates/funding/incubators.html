@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Incubator & Accelerator Directory - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-building me-2"></i>Incubator & Accelerator Directory</h3>
+        <div class="btn-group">
+            <a href="{% url 'incubator_directory' %}" class="btn btn-outline-primary btn-sm {% if not current_type %}active{% endif %}">All</a>
+            {% for key, label in incubator_types %}
+            <a href="?type={{ key }}" class="btn btn-outline-primary btn-sm {% if current_type == key %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% for incubator in incubators %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm glass-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if incubator.logo %}
+                        <img src="{{ incubator.logo.url }}" class="rounded-3 me-3" width="50" height="50" style="object-fit: contain;">
+                        {% else %}
+                        <div class="bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                            <i class="bi bi-building fs-3 text-primary"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="card-title mb-1">{{ incubator.name }}</h5>
+                            <span class="badge {% if incubator.incubator_type == 'accelerator' %}bg-success{% elif incubator.incubator_type == 'incubator' %}bg-info{% else %}bg-primary{% endif %}">
+                                {{ incubator.get_incubator_type_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted small">{{ incubator.description|truncatewords:25 }}</p>
+                    <div class="mb-2 small">
+                        {% if incubator.location %}<div><i class="bi bi-geo-alt me-1 text-danger"></i>{{ incubator.location }}</div>{% endif %}
+                        {% if incubator.funding_range %}<div><i class="bi bi-cash me-1 text-success"></i>{{ incubator.funding_range }}</div>{% endif %}
+                        {% if incubator.focus_industries %}
+                        <div class="mt-2">
+                            {% for ind in incubator.focus_industries|slice:":5" %}
+                            <span class="badge bg-light text-dark me-1">{{ ind }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-3">
+                    <div class="d-flex gap-2">
+                        {% if incubator.website %}
+                        <a href="{{ incubator.website }}" target="_blank" class="btn btn-outline-primary btn-sm flex-grow-1">
+                            <i class="bi bi-globe me-1"></i>Website
+                        </a>
+                        {% endif %}
+                        {% if incubator.application_link %}
+                        <a href="{{ incubator.application_link }}" target="_blank" class="btn btn-primary btn-sm flex-grow-1">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>Apply
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-building display-1 text-muted mb-3 d-block"></i>
+            <h5>No incubators listed yet</h5>
+            <p class="text-muted">Check back later for incubator listings.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

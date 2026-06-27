@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">My Profile</h2>
+    <a href="{% url 'edit_profile' %}" class="btn btn-warning"><i class="bi bi-pencil me-2"></i>Edit Profile</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card p-4 text-center">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" width="150" height="150">
+            {% else %}
+                <i class="bi bi-person-circle display-1 text-warning mb-3"></i>
+            {% endif %}
+            <h4>{{ user.get_full_name|default:user.username }}</h4>
+            <p class="badge bg-warning">{{ user.get_role_display }}</p>
+            <p class="text-muted">{{ user.email }}</p>
+            <p class="small text-muted">Member since {{ user.date_joined|date:"M Y" }}</p>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h4>About</h4>
+            <p>{{ user.bio|default:"No bio added yet." }}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="glass-card p-4">
+                    <h5><i class="bi bi-mortarboard text-warning me-2"></i>Education</h5>
+                    <p class="text-muted">{{ user.education|default:"Not specified" }}</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="glass-card p-4">
+                    <h5><i class="bi bi-briefcase text-warning me-2"></i>Experience</h5>
+                    <p class="text-muted">{{ user.experience|default:"Not specified" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <h5><i class="bi bi-stars text-warning me-2"></i>Skills</h5>
+            <p>{{ user.skills|default:"No skills listed" }}</p>
+        </div>
+
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-lightbulb text-warning me-2"></i>My Ideas</h5>
+            {% if ideas %}
+                <ul class="list-group list-group-flush bg-transparent">
+                {% for idea in ideas %}
+                    <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                        <a href="{% url 'idea_detail' idea.pk %}">{{ idea.startup_name }}</a>
+                        <span class="badge bg-{% if idea.status == 'approved' %}success{% elif idea.status == 'rejected' %}danger{% else %}warning{% endif %}">{{ idea.get_status_display }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No ideas submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Startup Map - Creative Spark{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-globe me-2"></i>Startup Location Map</h3>
+    </div>
+    <div class="card shadow-sm glass-card">
+        <div class="card-body p-0">
+            <div id="startupMap" style="height: 600px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var map = L.map('startupMap').setView([20, 78], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var startups = {{ startups_json|safe }};
+    startups.forEach(function(s) {
+        if (s.lat && s.lng) {
+            var marker = L.marker([s.lat, s.lng]).addTo(map);
+            marker.bindPopup(`
+                <div style="min-width: 200px;">
+                    <h6 style="margin-bottom: 5px; font-weight: 600;">${s.name}</h6>
+                    <small style="color: #666;">${s.industry}</small>
+                    ${s.city ? `<br><small style="color: #888;"><i class="bi bi-geo-alt"></i> ${s.city}</small>` : ''}
+                    <br><a href="${s.url}" style="margin-top: 8px; display: inline-block; color: #0d6efd; text-decoration: none; font-weight: 500;">View Details →</a>
+                </div>
+            `);
+        }
+    });
+
+    if (startups.length > 0 && startups[0].lat && startups[0].lng) {
+        map.setView([startups[0].lat, startups[0].lng], 10);
+    }
+});
+</script>
+{% endblock %}

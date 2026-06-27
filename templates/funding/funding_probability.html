@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Funding Probability Score - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm glass-card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Funding Probability Score</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Startup Idea</label>
+                            <select name="idea" class="form-select" required>
+                                <option value="">Choose an idea...</option>
+                                {% for idea in ideas %}
+                                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-calculator me-2"></i>Calculate Probability
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if result %}
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Funding Probability Result</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="probability-gauge position-relative d-inline-block">
+                            <canvas id="probabilityGauge" width="200" height="200"></canvas>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                <h2 class="fw-bold mb-0">{{ result.score }}%</h2>
+                                <span class="badge {% if result.level == 'High' %}bg-success{% elif result.level == 'Medium' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6">
+                                    {{ result.level }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if result.factors %}
+                    <h6 class="fw-bold">Key Factors:</h6>
+                    <ul class="list-group">
+                        {% for factor in result.factors %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            {{ factor }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div class="mt-4 p-3 bg-light rounded-3">
+                        <h6 class="fw-bold"><i class="bi bi-lightbulb me-2"></i>Recommendations</h6>
+                        <ul class="mb-0 small">
+                            {% if result.score < 50 %}
+                            <li>Strengthen your problem statement with more detail</li>
+                            <li>Improve your competitor analysis</li>
+                            <li>Consider adding a pitch deck</li>
+                            {% elif result.score < 75 %}
+                            <li>Your idea shows promise - refine your financial projections</li>
+                            <li>Consider seeking mentorship to strengthen weak areas</li>
+                            {% else %}
+                            <li>Your idea has strong funding potential</li>
+                            <li>Start preparing investor presentations</li>
+                            <li>Network with potential investors in our directory</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ctx = document.getElementById('probabilityGauge').getContext('2d');
+                var score = {{ result.score }};
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Score', 'Remaining'],
+                        datasets: [{
+                            data: [score, 100 - score],
+                            backgroundColor: [
+                                score >= 70 ? '#198754' : score >= 40 ? '#ffc107' : '#dc3545',
+                                '#e9ecef'
+                            ],
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        cutout: '80%',
+                        responsive: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false },
+                        }
+                    }
+                });
+            });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

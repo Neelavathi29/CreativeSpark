@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Voice to Text - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-mic me-2"></i>Voice to Text</h5>
+                </div>
+                <div class="card-body text-center py-5">
+                    <div class="voice-interface mb-4">
+                        <div class="mic-container" id="micContainer">
+                            <i class="bi bi-mic display-1 text-primary" id="micIcon"></i>
+                        </div>
+                        <p class="text-muted mt-3">Click the button below and speak your startup idea</p>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg rounded-circle p-4 mb-4" id="startBtn" onclick="startRecording()">
+                        <i class="bi bi-mic-fill fs-1"></i>
+                    </button>
+
+                    <form method="post" id="voiceForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Recognized Text:</label>
+                            <textarea class="form-control" id="transcript" name="transcript" rows="5" readonly placeholder="Your speech will appear here...">{{ transcript }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100" id="submitBtn" {% if not transcript %}disabled{% endif %}>
+                            <i class="bi bi-check-circle me-2"></i>Use This Text
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let recognition = null;
+let isRecording = false;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = function(event) {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            }
+        }
+        var textarea = document.getElementById('transcript');
+        textarea.value += finalTranscript;
+        document.getElementById('submitBtn').disabled = false;
+    };
+
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        stopRecording();
+    };
+}
+
+function startRecording() {
+    if (!recognition) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+        return;
+    }
+    if (isRecording) {
+        stopRecording();
+        return;
+    }
+    isRecording = true;
+    document.getElementById('startBtn').classList.add('btn-danger');
+    document.getElementById('startBtn').classList.remove('btn-primary');
+    document.getElementById('micIcon').classList.add('text-danger');
+    document.getElementById('micIcon').classList.remove('text-primary');
+    recognition.start();
+}
+
+function stopRecording() {
+    if (recognition) {
+        recognition.stop();
+    }
+    isRecording = false;
+    document.getElementById('startBtn').classList.remove('btn-danger');
+    document.getElementById('startBtn').classList.add('btn-primary');
+    document.getElementById('micIcon').classList.remove('text-danger');
+    document.getElementById('micIcon').classList.add('text-primary');
+}
+</script>
+{% endblock %}

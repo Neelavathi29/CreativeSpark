@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Share Your Success Story{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h3><i class="bi bi-trophy me-2 text-warning"></i>Share Your Success Story</h3>
+            <form method="post">{% csrf_token %}
+                <div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" required placeholder="How Creative Spark helped you..."></div>
+                <div class="mb-3"><label class="form-label">Your Story</label><textarea name="content" rows="6" class="form-control" required placeholder="Share your journey..."></textarea></div>
+                <div class="mb-3"><label class="form-label">Key Achievement</label><input type="text" name="achievement" class="form-control" required placeholder="e.g., Raised $500K seed funding"></div>
+                <div class="mb-3"><label class="form-label">Related Startup Idea (optional)</label><select name="idea" class="form-control"><option value="">None</option>{% for i in ideas %}<option value="{{ i.pk }}">{{ i.startup_name }}</option>{% endfor %}</select></div>
+                <button type="submit" class="btn btn-warning w-100">Submit Story</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

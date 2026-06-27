@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Task Board - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title"><i class="bi bi-kanban me-2 text-warning"></i>Task Board</h2>
+    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="bi bi-plus-circle me-2"></i>Add Task</button>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3"><div class="glass-card p-3"><h6>To Do <span class="badge bg-secondary">{{ todo|length }}</span></h6>{% for t in todo %}<div class="task-card p-2 mb-2"><small><strong>{{ t.title }}</strong></small><br><small class="text-muted">{{ t.get_priority_display }}</small><div class="mt-1"><a href="{% url 'update_task_status' t.id 'in_progress' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right"></i></a></div></div>{% empty %}<p class="text-muted small">No tasks</p>{% endfor %}</div></div>
+    <div class="col-md-3"><div class="glass-card p-3"><h6>In Progress <span class="badge bg-primary">{{ in_progress|length }}</span></h6>{% for t in in_progress %}<div class="task-card p-2 mb-2"><small><strong>{{ t.title }}</strong></small><br><small class="text-muted">{{ t.get_priority_display }}</small><div class="mt-1"><a href="{% url 'update_task_status' t.id 'review' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right"></i></a></div></div>{% empty %}<p class="text-muted small">No tasks</p>{% endfor %}</div></div>
+    <div class="col-md-3"><div class="glass-card p-3"><h6>Review <span class="badge bg-warning">{{ review|length }}</span></h6>{% for t in review %}<div class="task-card p-2 mb-2"><small><strong>{{ t.title }}</strong></small><br><small class="text-muted">{{ t.get_priority_display }}</small><div class="mt-1"><a href="{% url 'update_task_status' t.id 'done' %}" class="btn btn-sm btn-outline-success"><i class="bi bi-check"></i></a></div></div>{% empty %}<p class="text-muted small">No tasks</p>{% endfor %}</div></div>
+    <div class="col-md-3"><div class="glass-card p-3"><h6>Done <span class="badge bg-success">{{ done|length }}</span></h6>{% for t in done %}<div class="task-card p-2 mb-2"><small><strong>{{ t.title }}</strong></small><br><small class="text-muted">{{ t.get_priority_display }}</small><div class="mt-1"><a href="{% url 'delete_task' t.id %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a></div></div>{% empty %}<p class="text-muted small">No tasks</p>{% endfor %}</div></div>
+</div>
+
+<div class="modal fade" id="addTaskModal"><div class="modal-dialog"><div class="modal-content glass-card"><div class="modal-header"><h5 class="modal-title">New Task</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<form method="post" action="{% url 'add_task' %}">{% csrf_token %}
+<div class="modal-body">
+<div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" required></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+<div class="mb-3"><label class="form-label">Priority</label><select name="priority" class="form-control"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+<div class="mb-3"><label class="form-label">Related Idea</label><select name="idea" class="form-control"><option value="">None</option>{% for idea in ideas %}<option value="{{ idea.pk }}">{{ idea.startup_name }}</option>{% endfor %}</select></div>
+<div class="mb-3"><label class="form-label">Due Date</label><input type="date" name="due_date" class="form-control"></div>
+</div>
+<div class="modal-footer"><button type="submit" class="btn btn-warning">Create Task</button></div>
+</form></div></div></div>
+{% endblock %}

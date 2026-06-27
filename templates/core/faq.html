@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}FAQ - Creative Spark{% endblock %}
+{% block non_auth_content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Frequently Asked <span class="text-warning">Questions</span></h1>
+        <p class="lead">Everything you need to know about Creative Spark</p>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    {% for faq in faqs %}
+                    <div class="accordion-item glass-card mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}">
+                                <i class="bi bi-question-circle text-warning me-2"></i>
+                                {{ faq.q }}
+                            </button>
+                        </h2>
+                        <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                {{ faq.a }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

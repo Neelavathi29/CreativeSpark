@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}{{ idea.startup_name }} - Creative Spark{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h2>{{ idea.startup_name }}</h2>
+                    <p class="text-muted">by {{ idea.founder_name }}</p>
+                </div>
+                <span class="badge bg-{% if idea.status == 'approved' %}success{% elif idea.status == 'rejected' %}danger{% elif idea.status == 'submitted' %}info{% else %}secondary{% endif %} fs-6">{{ idea.get_status_display }}</span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-tag me-1"></i>Industry:</strong> {{ idea.get_industry_display }}</p>
+                    <p><strong><i class="bi bi-folder me-1"></i>Category:</strong> {{ idea.category.name|default:"N/A" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-cash me-1"></i>Investment:</strong> ${{ idea.required_investment }}</p>
+                    <p><strong><i class="bi bi-clock me-1"></i>Timeline:</strong> {{ idea.expected_timeline }}</p>
+                </div>
+            </div>
+
+            <div class="idea-section mb-3">
+                <h5><i class="bi bi-exclamation-triangle text-warning me-2"></i>Problem Statement</h5>
+                <p>{{ idea.problem_statement }}</p>
+            </div>
+
+            <div class="idea-section mb-3">
+                <h5><i class="bi bi-lightbulb text-warning me-2"></i>Proposed Solution</h5>
+                <p>{{ idea.proposed_solution }}</p>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-people text-warning me-2"></i>Target Customers</h5>
+                    <p>{{ idea.target_customers }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="bi bi-graph-up text-warning me-2"></i>Business Model</h5>
+                    <p>{{ idea.business_model }}</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-cash-stack text-warning me-2"></i>Revenue Model</h5>
+                    <p>{{ idea.revenue_model }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="bi bi-star text-warning me-2"></i>Unique Selling Proposition</h5>
+                    <p>{{ idea.unique_selling_proposition }}</p>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <h5><i class="bi bi-people-fill text-warning me-2"></i>Team Members</h5>
+                <p>{{ idea.team_members }}</p>
+            </div>
+
+            <div class="mb-3">
+                <h5><i class="bi bi-flag text-warning me-2"></i>Competitor Analysis</h5>
+                <p>{{ idea.competitor_analysis }}</p>
+            </div>
+
+            <div class="d-flex gap-2 mb-3">
+                {% if idea.pitch_deck %}
+                <a href="{{ idea.pitch_deck.url }}" class="btn btn-outline-warning" target="_blank"><i class="bi bi-file-earmark-pdf me-2"></i>View Pitch Deck</a>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-3 mb-4">
+                <a href="{% url 'like_idea' idea.pk %}" class="btn btn-outline-danger btn-sm">
+                    <i class="bi {% if is_liked %}bi-heart-fill{% else %}bi-heart{% endif %} me-1"></i>{{ idea.likes_count }}
+                </a>
+                <a href="{% url 'bookmark_idea' idea.pk %}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi {% if is_bookmarked %}bi-bookmark-fill{% else %}bi-bookmark{% endif %} me-1"></i>{{ idea.bookmarks_count }}
+                </a>
+                {% if idea.user == user %}
+                <a href="{% url 'idea_edit' idea.pk %}" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-chat-dots me-2 text-warning"></i>Comments ({{ comments.count }})</h5>
+            <form method="post" action="{% url 'add_comment' idea.pk %}" class="mb-3">
+                {% csrf_token %}
+                <div class="input-group">
+                    <textarea name="content" class="form-control" rows="2" placeholder="Add a comment..." required></textarea>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-send"></i></button>
+                </div>
+            </form>
+            {% for comment in comments %}
+            <div class="comment d-flex mb-3">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <div>
+                    <strong>{{ comment.user.username }}</strong>
+                    <small class="text-muted ms-2">{{ comment.created_at|timesince }} ago</small>
+                    <p class="mb-0">{{ comment.content }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        {% if evaluation %}
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-robot me-2 text-warning"></i>AI Evaluation</h5>
+            <div class="text-center mb-3">
+                <h2 class="text-warning">{{ evaluation.overall_rating }}</h2>
+                <small>Overall Rating</small>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small>Innovation</small>
+                    <small>{{ evaluation.innovation_score }}/100</small>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-warning" style="width:{{ evaluation.innovation_score }}%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small>Feasibility</small>
+                    <small>{{ evaluation.feasibility_score }}/100</small>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-success" style="width:{{ evaluation.feasibility_score }}%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small>Market Potential</small>
+                    <small>{{ evaluation.market_potential }}/100</small>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-info" style="width:{{ evaluation.market_potential }}%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small>Scalability</small>
+                    <small>{{ evaluation.scalability_score }}/100</small>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-primary" style="width:{{ evaluation.scalability_score }}%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small>Risk Score</small>
+                    <small>{{ evaluation.risk_score }}/100</small>
+                </div>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-danger" style="width:{{ evaluation.risk_score }}%"></div>
+                </div>
+            </div>
+            <hr>
+            <p><strong>Recommendation:</strong><br>{{ evaluation.incubation_recommendation }}</p>
+            <a href="{% url 'evaluation_detail' idea.pk %}" class="btn btn-warning w-100">Full Evaluation</a>
+        </div>
+
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-graph-up me-2 text-warning"></i>Actions</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'idea_market_analysis' idea.pk %}" class="btn btn-outline-info"><i class="bi bi-bar-chart me-2"></i>Market Analysis</a>
+                <a href="{% url 'export_pdf' idea.pk %}" class="btn btn-outline-danger"><i class="bi bi-file-earmark-pdf me-2"></i>PDF Report</a>
+                <a href="{% url 'export_excel' idea.pk %}" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel me-2"></i>Excel Report</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

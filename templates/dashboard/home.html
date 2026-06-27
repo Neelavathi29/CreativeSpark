@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">Welcome back, {{ user.first_name|default:user.username }}!</h2>
+    <div class="d-flex gap-2">
+        <div class="badge bg-info p-2">
+            <i class="bi bi-eye me-1"></i>{{ live_visitors }} online | {{ total_visitors }} total
+        </div>
+        {% if user.role == 'student' %}
+        <a href="{% url 'idea_create' %}" class="btn btn-warning"><i class="bi bi-plus-circle me-2"></i>New Idea</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Live Visitors</h6>
+                    <h3 class="text-info">{{ live_visitors }}</h3>
+                </div>
+                <i class="bi bi-people-fill stat-icon text-info"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Total Ideas</h6>
+                    <h3>{{ total_ideas|default:"0" }}</h3>
+                </div>
+                <i class="bi bi-lightbulb stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">Approved</h6>
+                    <h3 class="text-success">{{ approved|default:"0" }}</h3>
+                </div>
+                <i class="bi bi-check-circle stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h6 class="text-muted">AI Score</h6>
+                    <h3 class="text-warning">{{ avg_overall|default:"0.0" }}</h3>
+                </div>
+                <i class="bi bi-robot stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-graph-up me-2 text-warning"></i>Evaluation Scores</h5>
+            <canvas id="scoresChart" data-innovation="{{ avg_innovation }}" data-feasibility="{{ avg_feasibility }}" data-market="{{ avg_market }}" data-scalability="{{ avg_scalability }}"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-pie-chart me-2 text-warning"></i>Status Distribution</h5>
+            <canvas id="statusChart"
+                data-labels='[{% for label, count in status_counts.items %}&quot;{{ label }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for label, count in status_counts.items %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}]'></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-bar-chart-line me-2 text-warning"></i>Monthly Submissions</h5>
+            <canvas id="monthlyChart"
+                data-labels='[{% for label in monthly_labels %}&quot;{{ label }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for count in monthly_counts %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}]'></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-fire me-2 text-danger"></i>Trending Categories</h5>
+            <div class="d-flex flex-wrap gap-2">
+                {% for cat in trending_categories %}
+                <span class="badge bg-primary bg-opacity-75 p-2">
+                    <i class="bi bi-tag me-1"></i>{{ cat.name }} <span class="badge bg-light text-dark ms-1">{{ cat.idea_count }}</span>
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-star me-2 text-warning"></i>Your XP & Badges</h5>
+            <div class="d-flex align-items-center gap-3">
+                {% if user_xp %}
+                <div class="text-center">
+                    <h3 class="text-warning mb-0">{{ user_xp.total_xp }}</h3>
+                    <small class="text-muted">Total XP</small>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-primary mb-0">{{ user_xp.level }}</h3>
+                    <small class="text-muted">Level</small>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-success mb-0">{{ badge_count|default:"0" }}</h3>
+                    <small class="text-muted">Badges</small>
+                </div>
+                <a href="{% url 'challenge_list' %}" class="btn btn-warning btn-sm ms-auto">
+                    <i class="bi bi-trophy me-1"></i>Challenges
+                </a>
+                {% else %}
+                <p class="text-muted mb-0">Start participating to earn XP!</p>
+                <a href="{% url 'leaderboard' %}" class="btn btn-primary btn-sm ms-auto">
+                    <i class="bi bi-trophy me-1"></i>Leaderboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-activity me-2 text-warning"></i>Recent Activity</h5>
+            {% if recent_activities %}
+            <div class="activity-list">
+                {% for idea in recent_activities %}
+                <div class="activity-item d-flex align-items-center mb-3">
+                    <div class="activity-icon me-3"><i class="bi bi-lightbulb text-warning"></i></div>
+                    <div>
+                        <a href="{% url 'idea_detail' idea.pk %}" class="text-decoration-none">{{ idea.startup_name }}</a>
+                        <small class="text-muted d-block">{{ idea.updated_at|timesince }} ago - {{ idea.get_status_display }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No activity yet. <a href="{% url 'idea_create' %}">Submit your first idea!</a></p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-bar-chart me-2 text-warning"></i>Category Distribution</h5>
+            <canvas id="categoryChart"
+                data-labels='[{% for cat in category_stats %}&quot;{{ cat.name }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for cat in category_stats %}{{ cat.idea_count }}{% if not forloop.last %},{% endif %}{% endfor %}]'></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-trophy me-2 text-warning"></i>Top 10 Startups</h5>
+            {% if top_startups %}
+            <div class="top-startups-list">
+                {% for startup in top_startups|slice:":5" %}
+                <div class="d-flex align-items-center mb-2 p-2 bg-light bg-opacity-50 rounded-3">
+                    <span class="badge bg-warning text-dark me-2">{{ forloop.counter }}</span>
+                    <a href="{% url 'idea_detail' startup.pk %}" class="text-decoration-none flex-grow-1">{{ startup.startup_name }}</a>
+                    <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ startup.views_count }}</small>
+                </div>
+                {% endfor %}
+                <a href="{% url 'idea_list' %}" class="btn btn-outline-primary btn-sm w-100 mt-2">View All</a>
+            </div>
+            {% else %}
+            <p class="text-muted">No startups yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if recommendations %}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-star-fill me-2 text-warning"></i>Recommended for You</h5>
+            <div class="row g-3">
+                {% for rec in recommendations %}
+                <div class="col-md-4">
+                    <div class="card border-0 bg-primary bg-opacity-10 h-100">
+                        <div class="card-body">
+                            <h6><a href="{% url 'idea_detail' rec.idea.pk %}" class="text-decoration-none">{{ rec.idea.startup_name }}</a></h6>
+                            <p class="small text-muted mb-0">{{ rec.reason|default:"Based on your interests" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if user.role == 'mentor' %}
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Total Sessions</h6>
+            <h3>{{ total_sessions|default:"0" }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Pending</h6>
+            <h3 class="text-warning">{{ pending_sessions|default:"0" }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Completed</h6>
+            <h3 class="text-success">{{ completed_sessions|default:"0" }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    <h5>Recent Sessions</h5>
+    {% if recent_sessions %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Topic</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Meeting</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in recent_sessions %}
+            <tr>
+                <td>{{ session.student.username }}</td>
+                <td>{{ session.topic }}</td>
+                <td>{{ session.preferred_date }}</td>
+                <td><span class="badge bg-{% if session.status == 'confirmed' %}success{% elif session.status == 'pending' %}warning{% else %}secondary{% endif %}">{{ session.get_status_display }}</span></td>
+                <td>{% if session.meeting_link %}<a href="{{ session.meeting_link }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-camera-video me-1"></i>Join</a>{% else %}-{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No sessions yet.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if top_startups %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if approved > 0 %}
+    const confettiBtn = document.createElement('div');
+    confettiBtn.style.display = 'none';
+    document.body.appendChild(confettiBtn);
+    {% endif %}
+});
+</script>
+{% endif %}
+{% endblock %}

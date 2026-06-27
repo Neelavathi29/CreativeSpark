@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Reports - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title"><i class="bi bi-file-earmark-text me-2"></i>Reports Dashboard</h2>
+    <div class="d-flex gap-2">
+        <a href="{% url 'export_pdf_all' %}" class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-2"></i>Export All PDF</a>
+        <a href="{% url 'export_excel_all' %}" class="btn btn-success"><i class="bi bi-file-earmark-excel me-2"></i>Export All Excel</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Total Startups</h6>
+            <h3>{{ total_ideas|default:"0" }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Avg Innovation</h6>
+            <h3 class="text-warning">{{ avg_scores.avg_innovation|floatformat:1|default:"0" }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Avg Market Potential</h6>
+            <h3 class="text-info">{{ avg_scores.avg_market|floatformat:1|default:"0" }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card glass-card p-3">
+            <h6 class="text-muted">Avg Rating</h6>
+            <h3 class="text-success">{{ avg_scores.avg_overall|floatformat:2|default:"0" }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5 class="mb-3">Ideas by Status</h5>
+            <canvas id="reportStatusChart"
+                data-labels='[{% for label, count in status_counts.items %}&quot;{{ label }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for label, count in status_counts.items %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}]'></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5 class="mb-3">Ideas by Industry</h5>
+            <canvas id="reportIndustryChart"
+                data-labels='[{% for label, count in industry_counts.items %}&quot;{{ label }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for label, count in industry_counts.items %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}]'></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card p-4 mt-4">
+    <h5 class="mb-3">Export Options</h5>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="export-card p-3 text-center">
+                <i class="bi bi-file-earmark-pdf display-5 text-danger"></i>
+                <h6 class="mt-2">PDF Report</h6>
+                <p class="small text-muted">Full startup evaluation report</p>
+                <a href="{% url 'export_pdf_all' %}" class="btn btn-outline-danger w-100">Download</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="export-card p-3 text-center">
+                <i class="bi bi-file-earmark-excel display-5 text-success"></i>
+                <h6 class="mt-2">Excel Report</h6>
+                <p class="small text-muted">Spreadsheet with all startups</p>
+                <a href="{% url 'export_excel_all' %}" class="btn btn-outline-success w-100">Download</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="export-card p-3 text-center">
+                <i class="bi bi-file-earmark-bar-graph display-5 text-warning"></i>
+                <h6 class="mt-2">Evaluation Report</h6>
+                <p class="small text-muted">Detailed AI evaluation data</p>
+                <a href="{% url 'export_pdf_all' %}" class="btn btn-outline-warning w-100">Download</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Startup Showcase - Creative Spark{% endblock %}
+{% block content %}
+<h2 class="page-title mb-4"><i class="bi bi-star me-2 text-warning"></i>Startup Showcase</h2>
+<div class="row g-4">
+    {% for show in showcases %}
+    <div class="col-md-4">
+        <div class="glass-card p-3">
+            {% if show.featured_image %}
+            <img src="{{ show.featured_image.url }}" class="img-fluid rounded mb-3">
+            {% else %}
+            <div class="showcase-placeholder mb-3"><i class="bi bi-building display-4"></i></div>
+            {% endif %}
+            <h5>{{ show.idea.startup_name }}</h5>
+            <p class="text-muted small">{{ show.idea.problem_statement|truncatewords:20 }}</p>
+            <div class="d-flex justify-content-between">
+                <span class="badge bg-success">${{ show.funding_raised|floatformat:0 }} raised</span>
+                <a href="{% url 'idea_detail' show.idea.pk %}" class="btn btn-sm btn-outline-warning">View</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><div class="glass-card p-5 text-center"><i class="bi bi-star display-1 text-muted"></i><h4 class="mt-3">No showcases yet</h4></div></div>
+    {% endfor %}
+</div>
+{% endblock %}

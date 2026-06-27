@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Workspaces - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-folder me-2"></i>Shared Workspaces</h3>
+        <a href="{% url 'workspace_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Workspace
+        </a>
+    </div>
+
+    <div class="row">
+        {% for ws in workspaces %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <a href="{% url 'workspace_detail' pk=ws.id %}" class="text-decoration-none">
+                <div class="card shadow-sm glass-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="workspace-icon bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                                <i class="bi bi-folder-fill fs-3 text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-1">{{ ws.name }}</h5>
+                                <small class="text-muted">
+                                    <i class="bi bi-person me-1"></i>{{ ws.created_by.username }}
+                                </small>
+                            </div>
+                        </div>
+                        {% if ws.description %}
+                        <p class="card-text text-muted small">{{ ws.description|truncatewords:15 }}</p>
+                        {% endif %}
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span><i class="bi bi-people me-1"></i>{{ ws.members.count }} members</span>
+                            <span><i class="bi bi-file-earmark me-1"></i>{{ ws.documents.count }} docs</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <small class="text-muted">Created {{ ws.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-folder display-1 text-muted mb-3 d-block"></i>
+            <h5>No workspaces yet</h5>
+            <p class="text-muted">Create a shared workspace to collaborate with your team.</p>
+            <a href="{% url 'workspace_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Create Workspace
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

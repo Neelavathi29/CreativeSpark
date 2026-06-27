@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Calendar - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title"><i class="bi bi-calendar me-2 text-warning"></i>Calendar</h2>
+    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addEventModal"><i class="bi bi-plus-circle me-2"></i>Add Event</button>
+</div>
+<div class="row g-4">
+    {% regroup events by start_date|date:"Y-m" as month_list %}
+    {% for month in month_list %}
+    <div class="col-12">
+        <h5 class="mb-3">{{ month.grouper }}</h5>
+        <div class="row g-2">
+            {% for e in month.list %}
+            <div class="col-md-4">
+                <div class="glass-card p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6>{{ e.title }}</h6>
+                        <span class="badge bg-{% if e.event_type == 'meeting' %}primary{% elif e.event_type == 'deadline' %}danger{% elif e.event_type == 'pitch' %}success{% else %}secondary{% endif %}">{{ e.get_event_type_display }}</span>
+                    </div>
+                    <p class="small text-muted mb-1">{{ e.start_date }}{% if e.end_date %} - {{ e.end_date }}{% endif %}</p>
+                    <small>{{ e.description|default:""|truncatewords:15 }}</small>
+                    {% if e.related_idea %}<br><small class="text-warning"><i class="bi bi-lightbulb me-1"></i>{{ e.related_idea.startup_name }}</small>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><div class="glass-card p-5 text-center"><i class="bi bi-calendar display-1 text-muted"></i><h4 class="mt-3">No events</h4></div></div>
+    {% endfor %}
+</div>
+<div class="modal fade" id="addEventModal"><div class="modal-dialog"><div class="modal-content glass-card">
+<form method="post">{% csrf_token %}<div class="modal-header"><h5>New Event</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" required></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+<div class="row mb-3">
+<div class="col"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" required></div>
+<div class="col"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control"></div>
+</div>
+<div class="mb-3"><label class="form-label">Type</label><select name="event_type" class="form-control"><option value="other">Other</option><option value="meeting">Meeting</option><option value="deadline">Deadline</option><option value="pitch">Pitch</option></select></div>
+<div class="mb-3"><label class="form-label">Related Idea</label><select name="idea" class="form-control"><option value="">None</option>{% for i in ideas %}<option value="{{ i.pk }}">{{ i.startup_name }}</option>{% endfor %}</select></div>
+</div>
+<div class="modal-footer"><button type="submit" class="btn btn-warning">Add Event</button></div>
+</form></div></div></div>
+{% endblock %}

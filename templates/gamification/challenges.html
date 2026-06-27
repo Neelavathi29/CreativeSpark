@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Challenges - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4"><i class="bi bi-trophy me-2 text-warning"></i>Weekly Challenges</h3>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-arrow-up-circle me-2"></i>Active Challenges</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for challenge in active_challenges %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="card-title">
+                                                <i class="bi {{ challenge.icon }} me-2 text-warning"></i>{{ challenge.title }}
+                                            </h5>
+                                            <p class="card-text text-muted small">{{ challenge.description }}</p>
+                                        </div>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-star me-1"></i>{{ challenge.xp_reward }} XP
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div>
+                                            {% if challenge.badge_reward %}
+                                            <span class="badge bg-info me-2">
+                                                <i class="bi bi-award me-1"></i>{{ challenge.badge_reward.name }}
+                                            </span>
+                                            {% endif %}
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar me-1"></i>Ends {{ challenge.end_date|date }}
+                                            </small>
+                                        </div>
+                                        {% if challenge.id in joined_ids %}
+                                            {% with uc=user_challenges|dictsort:"challenge_id" %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                {% if uc.completed %}Completed{% else %}Participating{% endif %}
+                                            </span>
+                                            {% endwith %}
+                                        {% else %}
+                                        <a href="{% url 'join_challenge' pk=challenge.id %}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-plus-circle me-1"></i>Join Challenge
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="progress" style="height: 6px;">
+                                        {% with uc=user_challenges|dictsort:"challenge_id" %}
+                                        {% for uc_item in user_challenges %}
+                                            {% if uc_item.challenge_id == challenge.id %}
+                                            <div class="progress-bar bg-warning" style="width: {{ uc_item.progress }}%"></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-4">
+                            <i class="bi bi-trophy display-3 text-muted d-block mb-3"></i>
+                            <h5>No active challenges</h5>
+                            <p class="text-muted">New challenges coming soon!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if past_challenges %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Past Challenges</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for challenge in past_challenges %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="bi {{ challenge.icon }} me-2 text-muted"></i>{{ challenge.title }}</h6>
+                                    <small class="text-muted">{{ challenge.xp_reward }} XP</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

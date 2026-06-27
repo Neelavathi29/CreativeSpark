@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Investment Growth Simulator - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm glass-card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>Investment Growth Simulator</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Initial Investment ($)</label>
+                            <input type="number" name="initial_investment" class="form-control" value="10000" min="1000" step="1000" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Annual Growth Rate (%)</label>
+                            <input type="number" name="growth_rate" class="form-control" value="15" min="1" max="100" step="0.5" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Time Period (Years)</label>
+                            <input type="number" name="years" class="form-control" value="10" min="1" max="30" required>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-calculator me-2"></i>Simulate Growth
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if result %}
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Growth Projection</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-4">
+                        <div class="col-md-4">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <h6 class="text-muted">Initial Investment</h6>
+                                <h4 class="text-primary fw-bold">${{ result.initial|floatformat:0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                                <h6 class="text-muted">Growth Rate</h6>
+                                <h4 class="text-success fw-bold">{{ result.rate }}%</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                                <h6 class="text-muted">Final Value (Year {{ result.years }})</h6>
+                                {% with final=result|last %}
+                                <h4 class="text-info fw-bold">${{ final.value|floatformat:0 }}</h4>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <canvas id="growthChart" height="300"></canvas>
+
+                    <div class="table-responsive mt-4">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Projected Value</th>
+                                    <th>Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in result %}
+                                <tr>
+                                    <td>Year {{ p.year }}</td>
+                                    <td>${{ p.value|floatformat:2 }}</td>
+                                    <td class="text-success">+${{ p.value|add:"-10000"|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if result %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('growthChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ result.labels|safe }},
+            datasets: [{
+                label: 'Investment Value ($)',
+                data: {{ result.values|safe }},
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                fill: true,
+                tension: 0.4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return '$' + value.toLocaleString(); }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

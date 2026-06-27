@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Evaluation - {{ idea.startup_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title"><i class="bi bi-robot me-2"></i>AI Evaluation: {{ idea.startup_name }}</h2>
+    <a href="{% url 'idea_detail' idea.pk %}" class="btn btn-outline-warning"><i class="bi bi-arrow-left me-2"></i>Back to Idea</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3">Scores Overview</h5>
+            <canvas id="radarChart" 
+                data-innovation="{{ evaluation.innovation_score }}"
+                data-feasibility="{{ evaluation.feasibility_score }}"
+                data-market="{{ evaluation.market_potential }}"
+                data-scalability="{{ evaluation.scalability_score }}"
+                data-risk="{{ evaluation.risk_score }}">
+            </canvas>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-warning">{{ evaluation.innovation_score }}</h3>
+                    <small>Innovation Score</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-success">{{ evaluation.feasibility_score }}</h3>
+                    <small>Feasibility Score</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-info">{{ evaluation.market_potential }}</h3>
+                    <small>Market Potential</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-primary">{{ evaluation.scalability_score }}</h3>
+                    <small>Scalability Score</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-danger">{{ evaluation.risk_score }}</h3>
+                    <small>Risk Score</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card p-3 text-center">
+                    <h3 class="text-warning">{{ evaluation.overall_rating }}</h3>
+                    <small>Overall Rating</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3 text-success"><i class="bi bi-check-circle me-2"></i>Strengths</h5>
+            <p>{{ evaluation.strengths|linebreaks }}</p>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3 text-danger"><i class="bi bi-exclamation-circle me-2"></i>Weaknesses</h5>
+            <p>{{ evaluation.weaknesses|linebreaks }}</p>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="glass-card p-4">
+                    <h5 class="text-info"><i class="bi bi-arrow-up-circle me-2"></i>Opportunities</h5>
+                    <p>{{ evaluation.opportunities|linebreaks }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card p-4">
+                    <h5 class="text-warning"><i class="bi bi-shield-exclamation me-2"></i>Threats</h5>
+                    <p>{{ evaluation.threats|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card p-4 mb-4">
+            <div class="text-center mb-3">
+                <h1 class="display-4 text-warning">{{ evaluation.overall_rating }}</h1>
+                <h5>Overall Rating</h5>
+                <span class="badge bg-{% if evaluation.overall_rating >= 4 %}success{% elif evaluation.overall_rating >= 3 %}warning{% else %}danger{% endif %} fs-6 mt-2">{{ evaluation.incubation_recommendation }}</span>
+            </div>
+        </div>
+
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-lightbulb me-2 text-warning"></i>Improvement Suggestions</h5>
+            <p>{{ evaluation.improvement_suggestions|linebreaks }}</p>
+            <hr>
+            <div class="d-grid gap-2">
+                <a href="{% url 'export_pdf' idea.pk %}" class="btn btn-danger"><i class="bi bi-file-earmark-pdf me-2"></i>Download PDF</a>
+                <a href="{% url 'export_excel' idea.pk %}" class="btn btn-success"><i class="bi bi-file-earmark-excel me-2"></i>Download Excel</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

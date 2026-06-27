@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Badges - Creative Spark{% endblock %}
+{% block content %}
+<h2 class="page-title mb-4"><i class="bi bi-award me-2 text-warning"></i>Achievement Badges</h2>
+<div class="row g-4">
+    {% for b in badges %}
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center {% if b.locked %}opacity-50{% endif %}">
+            <i class="bi {{ b.badge.icon }} display-4 {% if b.earned %}text-warning{% else %}text-muted{% endif %}"></i>
+            <h6 class="mt-2">{{ b.badge.name }}</h6>
+            <small class="text-muted">{{ b.badge.description }}</small>
+            {% if b.earned %}
+            <div class="mt-2"><span class="badge bg-success"><i class="bi bi-check-circle"></i> Earned</span></div>
+            {% elif b.locked %}
+            <div class="mt-2"><span class="badge bg-secondary">Locked</span></div>
+            {% else %}
+            <div class="progress mt-2" style="height:4px"><div class="progress-bar bg-warning" style="width:{{ b.progress }}%"></div></div>
+            <small>{{ b.progress }}% complete</small>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

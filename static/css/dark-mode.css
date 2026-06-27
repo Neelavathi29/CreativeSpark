@@ -1,0 +1,64 @@
+[data-bs-theme="dark"] {
+    --glass-bg: rgba(30, 30, 50, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-color: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .top-navbar {
+    background: rgba(30, 30, 50, 0.9) !important;
+}
+
+[data-bs-theme="dark"] .top-navbar .text-dark {
+    color: #e0e0e0 !important;
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background: rgba(40, 40, 60, 0.9);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .table {
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .table thead th {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] .page-title {
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #a0a0a0 !important;
+}
+
+[data-bs-theme="dark"] .comment,
+[data-bs-theme="dark"] .discussion-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .list-group-item {
+    background: transparent;
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .accordion-button {
+    background: rgba(30, 30, 50, 0.85) !important;
+    color: #e0e0e0 !important;
+}
+
+[data-bs-theme="dark"] .accordion-body {
+    background: rgba(30, 30, 50, 0.85);
+    color: #e0e0e0;
+}

@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Creative Spark - AI Startup Incubation Platform{% endblock %}
+{% block non_auth_content %}
+
+<section class="hero-section d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">
+                    Transform Your <span class="text-warning">Startup Idea</span> Into Reality
+                </h1>
+                <p class="hero-subtitle">AI-powered incubation platform that evaluates, validates, and accelerates your startup journey from concept to launch.</p>
+                <div class="mt-4">
+                    <a href="{% url 'register' %}" class="btn btn-warning btn-lg me-3">Start Your Journey</a>
+                    <a href="{% url 'about' %}" class="btn btn-outline-light btn-lg">Learn More</a>
+                </div>
+                <div class="hero-stats mt-5">
+                    <div class="row">
+                        <div class="col-4">
+                            <h3 class="text-warning">{{ stats.total_ideas|default:"0" }}+</h3>
+                            <small>Startup Ideas</small>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="text-warning">{{ stats.approved_ideas|default:"0" }}+</h3>
+                            <small>Approved</small>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="text-warning">{{ stats.avg_rating|floatformat:1|default:"0.0" }}</h3>
+                            <small>Avg Rating</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-animation">
+                    <i class="bi bi-lightning-charge-fill hero-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="startup-carousel-section py-5 bg-dark bg-opacity-25">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Featured <span class="text-warning">Startups</span></h2>
+            <p class="text-muted">Innovative startups powered by Creative Spark</p>
+        </div>
+        <div id="startupCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner rounded-3">
+                {% for idea in image_carousel %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="row align-items-center p-5" style="min-height: 300px; background: linear-gradient(135deg, var(--bs-dark), var(--bs-primary));">
+                        <div class="col-md-6 text-white">
+                            <h3>{{ idea.startup_name }}</h3>
+                            <p class="text-white-50">{{ idea.problem_statement|truncatewords:20 }}</p>
+                            <a href="{% url 'idea_detail' idea.pk %}" class="btn btn-warning">View Details</a>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <i class="bi bi-lightning-charge-fill display-1 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if not image_carousel %}
+                <div class="carousel-item active">
+                    <div class="row align-items-center p-5" style="min-height: 300px; background: linear-gradient(135deg, var(--bs-dark), var(--bs-primary));">
+                        <div class="col-md-6 text-white">
+                            <h3>Your Startup Could Be Here!</h3>
+                            <p class="text-white-50">Submit your startup idea and get featured on our platform.</p>
+                            <a href="{% url 'register' %}" class="btn btn-warning">Get Started</a>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <i class="bi bi-rocket-takeoff display-1 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#startupCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#startupCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<div id="pageTransition" class="page-transition-overlay"></div>
+
+<section class="features-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Why Choose <span class="text-warning">Creative Spark</span>?</h2>
+            <p class="text-muted">Everything you need to launch your startup successfully</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h4>AI Evaluation</h4>
+                    <p>Get instant AI-powered analysis of your startup idea with detailed scores and recommendations.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h4>Expert Mentors</h4>
+                    <p>Connect with experienced mentors who provide personalized guidance for your startup.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4>Market Analysis</h4>
+                    <p>Comprehensive market research and competitor analysis for informed decision-making.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                    </div>
+                    <h4>Detailed Reports</h4>
+                    <p>Generate professional PDF and Excel reports for investors and stakeholders.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <h4>Funding Tips</h4>
+                    <p>Access curated funding opportunities and tips to secure investment for your venture.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-map"></i>
+                    </div>
+                    <h4>Startup Roadmap</h4>
+                    <p>Follow a structured roadmap from idea validation to product launch and scaling.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="roadmap-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Startup <span class="text-warning">Roadmap</span></h2>
+            <p class="text-muted">Your journey from idea to successful startup</p>
+        </div>
+        <div class="roadmap">
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-check-circle"></i></div>
+                <h5>Idea Validation</h5>
+                <p class="text-muted">Validate your concept with AI analysis</p>
+            </div>
+            <div class="roadmap-arrow"><i class="bi bi-arrow-down"></i></div>
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-search"></i></div>
+                <h5>Market Research</h5>
+                <p class="text-muted">Deep dive into market opportunities</p>
+            </div>
+            <div class="roadmap-arrow"><i class="bi bi-arrow-down"></i></div>
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-tools"></i></div>
+                <h5>Prototype</h5>
+                <p class="text-muted">Build your MVP and test the market</p>
+            </div>
+            <div class="roadmap-arrow"><i class="bi bi-arrow-down"></i></div>
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-piggy-bank"></i></div>
+                <h5>Funding</h5>
+                <p class="text-muted">Secure investment and resources</p>
+            </div>
+            <div class="roadmap-arrow"><i class="bi bi-arrow-down"></i></div>
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-rocket"></i></div>
+                <h5>Product Launch</h5>
+                <p class="text-muted">Launch to market with confidence</p>
+            </div>
+            <div class="roadmap-arrow"><i class="bi bi-arrow-down"></i></div>
+            <div class="roadmap-item">
+                <div class="roadmap-icon"><i class="bi bi-bar-chart"></i></div>
+                <h5>Scaling</h5>
+                <p class="text-muted">Grow and expand your reach</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">What <span class="text-warning">Entrepreneurs</span> Say</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card glass-card">
+                    <p class="testimonial-text">"Creative Spark helped me refine my startup idea with their AI evaluation. The mentorship program connected me with industry experts who guided me through the entire process."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <i class="bi bi-person-circle fs-2 me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Sarah Johnson</h6>
+                            <small class="text-muted">Founder, TechFlow</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card glass-card">
+                    <p class="testimonial-text">"The market analysis and competitive insights I got from this platform were invaluable. I was able to pivot my business model based on the data-driven recommendations."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <i class="bi bi-person-circle fs-2 me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Mike Chen</h6>
+                            <small class="text-muted">CEO, GreenTech Solutions</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card glass-card">
+                    <p class="testimonial-text">"As a first-time entrepreneur, the incubation roadmap and funding tips were game-changers. I successfully raised my seed round using the reports generated by the platform."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <i class="bi bi-person-circle fs-2 me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Emily Rodriguez</h6>
+                            <small class="text-muted">Founder, EduInnovate</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section py-5">
+    <div class="container text-center">
+        <h2 class="text-white mb-3">Ready to Launch Your Startup?</h2>
+        <p class="text-light mb-4">Join thousands of entrepreneurs who have transformed their ideas into successful businesses.</p>
+        <a href="{% url 'register' %}" class="btn btn-warning btn-lg">Get Started Free</a>
+    </div>
+</section>
+
+{% endblock %}

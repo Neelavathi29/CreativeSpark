@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Security Settings{% endblock %}
+{% block content %}
+<h2 class="page-title mb-4"><i class="bi bi-shield-lock me-2 text-warning"></i>Security Settings</h2>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div><h5 class="mb-1">Two-Factor Authentication</h5><p class="text-muted small mb-0">Add an extra layer of security to your account</p></div>
+                <span class="badge bg-{% if two_factor.is_enabled %}success{% else %}secondary{% endif %} fs-6">{% if two_factor.is_enabled %}Enabled{% else %}Disabled{% endif %}</span>
+            </div>
+            <hr>
+            <a href="{% url 'toggle_two_factor' %}" class="btn btn-{% if two_factor.is_enabled %}danger{% else %}success{% endif %} w-100">
+                {% if two_factor.is_enabled %}<i class="bi bi-shield-x me-2"></i>Disable 2FA{% else %}<i class="bi bi-shield-check me-2"></i>Enable 2FA{% endif %}
+            </a>
+            {% if two_factor.is_enabled and two_factor.backup_codes %}
+            <div class="mt-3 alert alert-warning"><h6>Backup Codes</h6><pre class="small mb-0">{{ two_factor.backup_codes }}</pre><small>Save these codes in a secure location.</small></div>
+            {% endif %}
+        </div>
+        <div class="glass-card p-4 mt-4">
+            <h5><i class="bi bi-key me-2 text-warning"></i>Password</h5>
+            <a href="{% url 'change_password' %}" class="btn btn-warning w-100"><i class="bi bi-pencil me-2"></i>Change Password</a>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-clock-history me-2 text-warning"></i>Login Activity</h5>
+            <div class="table-responsive" style="max-height:400px">
+                <table class="table table-sm">
+                    <thead><tr><th>Time</th><th>IP</th><th>Status</th></tr></thead>
+                    <tbody>{% for a in activities %}<tr><td><small>{{ a.timestamp|timesince }} ago</small></td><td><small>{{ a.ip_address }}</small></td><td><span class="badge bg-{% if a.is_successful %}success{% else %}danger{% endif %}">{{ a.is_successful|yesno:"Success,Failed" }}</span></td></tr>{% empty %}<tr><td colspan="3" class="text-muted">No login history</td></tr>{% endfor %}</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

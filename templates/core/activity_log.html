@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Account Activity Log - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Account Activity Log</h5>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>IP Address</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities %}
+                                <tr>
+                                    <td>
+                                        <span class="badge 
+                                            {% if activity.action == 'Login' %}bg-success
+                                            {% elif activity.action == 'Logout' %}bg-secondary
+                                            {% elif activity.action == 'Password Change' %}bg-warning text-dark
+                                            {% elif activity.action == 'Profile Update' %}bg-info
+                                            {% else %}bg-primary{% endif %}">
+                                            {{ activity.action }}
+                                        </span>
+                                    </td>
+                                    <td><small>{{ activity.details|default:"-" }}</small></td>
+                                    <td><code>{{ activity.ip_address|default:"-" }}</code></td>
+                                    <td><small>{{ activity.timestamp|date:"M d, Y H:i" }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-clock-history display-1 text-muted mb-3 d-block"></i>
+                        <h5>No activity recorded yet</h5>
+                        <p class="text-muted">Activities like login, profile changes, and security events will appear here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

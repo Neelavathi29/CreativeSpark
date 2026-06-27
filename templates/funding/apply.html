@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Apply for Funding{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h3 class="mb-3">Funding Application</h3>
+            {% if investor %}<h5 class="text-muted mb-4">Applying to: {{ investor.name }}</h5>{% endif %}
+            <form method="post">{% csrf_token %}
+                <div class="mb-3"><label class="form-label">Startup Idea</label><select name="idea" class="form-control" required>{% for i in ideas %}<option value="{{ i.pk }}">{{ i.startup_name }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label class="form-label">Amount Requested ($)</label><input type="number" name="amount" class="form-control" required></div>
+                <div class="mb-3"><label class="form-label">Pitch Summary</label><textarea name="pitch_summary" rows="6" class="form-control" required placeholder="Describe why investors should fund your startup..."></textarea></div>
+                <button type="submit" class="btn btn-warning w-100">Submit Application</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

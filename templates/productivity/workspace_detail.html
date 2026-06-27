@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ workspace.name }} - Workspace{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-folder-fill me-2 text-primary"></i>{{ workspace.name }}</h3>
+            {% if workspace.description %}<p class="text-muted mb-0">{{ workspace.description }}</p>{% endif %}
+        </div>
+        <a href="{% url 'workspace_list' %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>All Workspaces
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm glass-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark me-2"></i>Documents</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDocModal">
+                        <i class="bi bi-plus-circle me-1"></i>Add Document
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for doc in documents %}
+                    <div class="document-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <div>
+                            <h6 class="mb-1">{{ doc.title }}</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-person me-1"></i>{{ doc.uploaded_by.username }}
+                                <i class="bi bi-clock ms-2 me-1"></i>{{ doc.updated_at|timesince }} ago
+                            </small>
+                        </div>
+                        <div>
+                            {% if doc.content %}
+                            <button class="btn btn-sm btn-outline-primary" onclick="alert('{{ doc.content|escapejs }}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center py-3">No documents yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm glass-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members</h5>
+                </div>
+                <div class="card-body">
+                    {% for member in members %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>{{ member.user.username }}</strong>
+                            <br><small class="text-muted">{{ member.get_role_display }}</small>
+                        </div>
+                        {% if request.user == workspace.created_by or request.user == member.user %}
+                        <form method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="remove_member">
+                            <input type="hidden" name="member_id" value="{{ member.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this member?')">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="bi bi-person me-1"></i>{{ members.count }} member{{ members.count|pluralize }}
+                    </small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm glass-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Created by:</strong> {{ workspace.created_by.username }}</p>
+                    <p class="mb-1"><strong>Created:</strong> {{ workspace.created_at|date }}</p>
+                    {% if workspace.idea %}
+                    <p class="mb-0"><strong>Related Idea:</strong> {{ workspace.idea.startup_name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addDocModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_document">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        <textarea name="content" class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

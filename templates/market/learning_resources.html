@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Learning Resources - Creative Spark{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-book me-2"></i>Learning Resources</h3>
+        <div class="btn-group">
+            <a href="{% url 'learning_resources' %}" class="btn btn-outline-primary btn-sm {% if not current_type %}active{% endif %}">All</a>
+            {% for key, label in resource_types %}
+            <a href="?type={{ key }}" class="btn btn-outline-primary btn-sm {% if current_type == key %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% for resource in resources %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm glass-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="resource-icon bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                            {% if resource.resource_type == 'course' %}<i class="bi bi-play-circle fs-3 text-primary"></i>
+                            {% elif resource.resource_type == 'video' %}<i class="bi bi-camera-reels fs-3 text-danger"></i>
+                            {% elif resource.resource_type == 'article' %}<i class="bi bi-file-text fs-3 text-success"></i>
+                            {% elif resource.resource_type == 'book' %}<i class="bi bi-book fs-3 text-warning"></i>
+                            {% else %}<i class="bi bi-link fs-3 text-info"></i>{% endif %}
+                        </div>
+                        <div>
+                            <span class="badge bg-secondary">{{ resource.get_resource_type_display }}</span>
+                            {% if resource.category %}<span class="badge bg-info ms-1">{{ resource.category }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <h5 class="card-title">{{ resource.title }}</h5>
+                    <p class="card-text text-muted small">{{ resource.description|truncatewords:20 }}</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-3">
+                    <a href="{{ resource.url }}" target="_blank" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Access Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-book display-1 text-muted mb-3 d-block"></i>
+            <h5>No resources available</h5>
+            <p class="text-muted">Learning resources are being added.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

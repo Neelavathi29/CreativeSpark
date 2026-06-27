@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Success Stories - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title"><i class="bi bi-trophy me-2 text-warning"></i>Success Stories</h2>
+    <a href="{% url 'add_success_story' %}" class="btn btn-warning"><i class="bi bi-plus-circle me-2"></i>Share Your Story</a>
+</div>
+<div class="row g-4">
+    {% for story in stories %}
+    <div class="col-md-6">
+        <div class="glass-card p-4">
+            <div class="d-flex justify-content-between">
+                <h5>{{ story.title }}</h5>
+                {% if story.is_featured %}<span class="badge bg-warning"><i class="bi bi-star-fill"></i> Featured</span>{% endif %}
+            </div>
+            <p class="text-muted small">by {{ story.user.username }} | {{ story.created_at|date }}</p>
+            <p>{{ story.content|truncatewords:40 }}</p>
+            <div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>{{ story.achievement }}</div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><div class="glass-card p-5 text-center"><i class="bi bi-trophy display-1 text-muted"></i><h4 class="mt-3">No stories yet</h4></div></div>
+    {% endfor %}
+</div>
+{% endblock %}

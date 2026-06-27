@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Leaderboard - Creative Spark{% endblock %}
+{% block content %}
+<h2 class="page-title mb-4"><i class="bi bi-trophy me-2 text-warning"></i>Leaderboard</h2>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <table class="table">
+                <thead><tr><th>#</th><th>User</th><th>Level</th><th>XP</th><th>Ideas</th><th>Sessions</th></tr></thead>
+                <tbody>
+                    {% for u in top_users %}
+                    <tr class="{% if u.user == request.user %}table-warning{% endif %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{% url 'public_profile' u.user.pk %}">{{ u.user.username }}</a></td>
+                        <td><span class="badge bg-warning">Lv {{ u.level }}</span></td>
+                        <td>{{ u.total_xp }} XP</td>
+                        <td>{{ u.ideas_approved }}</td>
+                        <td>{{ u.mentorship_sessions }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-person-circle display-3 text-warning"></i>
+            <h4>{{ user.username }}</h4>
+            <h2 class="text-warning">Level {{ user_xp.level }}</h2>
+            <h5>{{ user_xp.total_xp }} XP</h5>
+            <p>Rank #{{ user_rank }}</p>
+            <div class="progress mb-2"><div class="progress-bar bg-warning" style="width:{{ user_xp.total_xp|default:0 }}%"></div></div>
+            <small>{{ user_xp.total_xp|default:0 }} XP - Level {{ user_xp.level }}</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
