@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Sentiment Analysis{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-emoji-smile"></i> AI Sentiment Analysis</h2>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Analyze Your Business Idea</h5>
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Enter your business idea description</label>
+              <textarea name="text" class="form-control" rows="8" required placeholder="Describe your startup idea, problem, and solution..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Analyze Sentiment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      {% if result %}
+      <div class="card glass-card">
+        <div class="card-body text-center">
+          <h5 class="card-title">Analysis Result</h5>
+          <div class="display-1 mb-3">
+            {% if result.sentiment == 'Positive' or result.sentiment == 'Very Positive' %}
+            <i class="bi bi-emoji-smile text-success"></i>
+            {% elif result.sentiment == 'Neutral' %}
+            <i class="bi bi-emoji-neutral text-warning"></i>
+            {% else %}
+            <i class="bi bi-emoji-frown text-danger"></i>
+            {% endif %}
+          </div>
+          <h3 class="{% if result.sentiment == 'Positive' or result.sentiment == 'Very Positive' %}text-success{% elif result.sentiment == 'Neutral' %}text-warning{% else %}text-danger{% endif %}">{{ result.sentiment }}</h3>
+          <div class="progress my-3" style="height: 25px;">
+            <div class="progress-bar {% if result.score >= 70 %}bg-success{% elif result.score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ result.score }}%">{{ result.score }}%</div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <small class="text-muted">Positive Words</small>
+                <h4 class="text-success mb-0">{{ result.positive_words }}</h4>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <small class="text-muted">Negative Words</small>
+                <h4 class="text-danger mb-0">{{ result.negative_words }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="mt-4">
+    <a href="{% url 'ai_tools' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to AI Tools</a>
+  </div>
+</div>
+{% endblock %}

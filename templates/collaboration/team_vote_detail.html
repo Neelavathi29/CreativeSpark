@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ vote.title }} - Team Vote{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h3 class="fw-bold mb-1">{{ vote.title }}</h3>
+                    <p class="text-muted">{{ vote.description }}</p>
+                </div>
+                <span class="badge bg-{% if vote.status == 'open' %}success{% elif vote.status == 'closed' %}secondary{% else %}info{% endif %} fs-6">{{ vote.get_status_display }}</span>
+            </div>
+            <div class="d-flex gap-4 mb-3">
+                <small class="text-muted"><i class="bi bi-people me-1"></i>Team: {{ vote.team.name }}</small>
+                <small class="text-muted"><i class="bi bi-calendar me-1"></i>Deadline: {{ vote.deadline|date:"M d, Y h:i A" }}</small>
+            </div>
+            <hr>
+            <h5>Options</h5>
+            {% for option in vote.options.all %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1"><span>{{ option.text }}</span><span>{{ option.votes_count }} votes</span></div>
+                <div class="progress" style="height:20px;"><div class="progress-bar bg-warning" style="width:{{ option.percentage|floatformat:0 }}%">{{ option.percentage|floatformat:0 }}%</div></div>
+            </div>
+            {% endfor %}
+            {% if vote.status == 'open' and not has_voted %}
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {% for option in vote.options.all %}
+                    <div class="form-check"><input class="form-check-input" type="radio" name="option" value="{{ option.pk }}" id="vopt{{ option.pk }}" required><label class="form-check-label" for="vopt{{ option.pk }}">{{ option.text }}</label></div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-warning"><i class="bi bi-check-circle me-2"></i>Cast Vote</button>
+            </form>
+            {% elif has_voted %}
+            <div class="alert alert-info mt-3"><i class="bi bi-check-circle me-2"></i>You have already voted.</div>
+            {% endif %}
+        </div>
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-people me-2 text-warning"></i>Voting Activity</h5>
+            <div class="list-group">
+                {% for log in vote_logs %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <span><i class="bi bi-person-circle me-2"></i>{{ log.voter.username }}</span>
+                    <span class="text-muted">{{ log.voted_at|timesince }} ago</span>
+                </div>
+                {% empty %}
+                <p class="text-muted py-2 mb-0">No votes cast yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

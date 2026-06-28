@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Live Funding Tracker{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cash-stack"></i> Live Funding Tracker</h2>
+  </div>
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card glass-card text-center">
+        <div class="card-body">
+          <h6>Total Applications</h6>
+          <h2 class="text-primary">{{ total_applications }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-card text-center">
+        <div class="card-body">
+          <h6>Total Funded</h6>
+          <h2 class="text-success">${{ total_amount|floatformat:0 }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-card text-center">
+        <div class="card-body">
+          <h6>Accepted</h6>
+          <h2 class="text-success">{{ total_accepted }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card glass-card text-center">
+        <div class="card-body">
+          <h6>Pending Review</h6>
+          <h2 class="text-warning">{{ total_pending }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Recent Applications</h5>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Startup</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for app in recent_applications %}
+                <tr>
+                  <td>{{ app.idea.startup_name }}</td>
+                  <td>${{ app.amount_requested|floatformat:0 }}</td>
+                  <td><span class="badge bg-{% if app.status == 'accepted' %}success{% elif app.status == 'rejected' %}danger{% elif app.status == 'submitted' %}warning{% else %}secondary{% endif %}">{{ app.get_status_display }}</span></td>
+                  <td><small>{{ app.created_at|date:"M d, Y" }}</small></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted">No applications yet</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Funding Timeline</h5>
+          <div class="timeline">
+            {% for entry in timeline %}
+            <div class="d-flex mb-3">
+              <div class="me-3 text-center">
+                <div class="bg-primary rounded-circle" style="width: 12px; height: 12px;"></div>
+              </div>
+              <div>
+                <strong>{{ entry.idea.startup_name }}</strong>
+                <span class="badge bg-info ms-2">{{ entry.get_event_type_display }}</span>
+                <div class="small text-muted">${{ entry.amount|floatformat:0 }} - {{ entry.date|date:"M Y" }}</div>
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted text-center py-3">No funding events yet</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ question.title }} - Forum{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex">
+                <div class="text-center me-3" style="min-width:50px;">
+                    <button class="btn btn-sm btn-outline-success mb-1" onclick="vote({{ question.pk }}, 'up')"><i class="bi bi-chevron-up"></i></button>
+                    <h5 class="mb-1">{{ question.votes }}</h5>
+                    <button class="btn btn-sm btn-outline-danger" onclick="vote({{ question.pk }}, 'down')"><i class="bi bi-chevron-down"></i></button>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="fw-bold mb-2">{{ question.title }}</h3>
+                    <p>{{ question.content|linebreaks }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>{% for tag in question.tags.all %}<span class="badge bg-info me-1">{{ tag.name }}</span>{% endfor %}</div>
+                        <small class="text-muted"><i class="bi bi-person me-1"></i>{{ question.user.username }} &middot; {{ question.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-chat-dots me-2 text-warning"></i>{{ answers.count }} Answers</h5>
+            {% for answer in answers %}
+            <div class="d-flex mb-4 pb-3 border-bottom">
+                <div class="text-center me-3" style="min-width:40px;">
+                    <button class="btn btn-sm btn-outline-success mb-1" onclick="voteAnswer({{ answer.pk }}, 'up')"><i class="bi bi-chevron-up"></i></button>
+                    <h6 class="mb-1">{{ answer.votes }}</h6>
+                    <button class="btn btn-sm btn-outline-danger" onclick="voteAnswer({{ answer.pk }}, 'down')"><i class="bi bi-chevron-down"></i></button>
+                    {% if answer.is_accepted %}<i class="bi bi-check-circle-fill text-success mt-1"></i>{% endif %}
+                </div>
+                <div class="flex-grow-1">
+                    <p class="mb-1">{{ answer.content|linebreaks }}</p>
+                    <small class="text-muted">{{ answer.user.username }} &middot; {{ answer.created_at|timesince }} ago</small>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No answers yet. Be the first to answer!</p>
+            {% endfor %}
+        </div>
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-pencil me-2 text-warning"></i>Your Answer</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea name="content" class="form-control" rows="5" placeholder="Write your answer..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning">Post Answer</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-info-circle me-2 text-warning"></i>Question Stats</h5>
+            <div class="d-flex justify-content-between mb-2"><span>Views</span><strong>{{ question.views }}</strong></div>
+            <div class="d-flex justify-content-between mb-2"><span>Votes</span><strong>{{ question.votes }}</strong></div>
+            <div class="d-flex justify-content-between mb-2"><span>Answers</span><strong>{{ answers.count }}</strong></div>
+            <div class="d-flex justify-content-between"><span>Asked</span><strong>{{ question.created_at|timesince }} ago</strong></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function vote(pk, dir){ fetch('{% url "forum_detail" question.pk %}', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}', 'Content-Type':'application/json'}, body:JSON.stringify({vote:pk, direction:dir})}).then(r=>r.json()).then(d=>{ if(d.success) location.reload(); }); }
+function voteAnswer(pk, dir){ fetch('{% url "forum_detail" question.pk %}', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}', 'Content-Type':'application/json'}, body:JSON.stringify({vote_answer:pk, direction:dir})}).then(r=>r.json()).then(d=>{ if(d.success) location.reload(); }); }
+</script>
+{% endblock %}

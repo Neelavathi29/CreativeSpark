@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Terms & Conditions Generator{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-file-text"></i> AI Terms & Conditions Generator</h2>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Select Startup</h5>
+          <form method="get">
+            <div class="mb-3">
+              <label class="form-label">Choose a startup idea</label>
+              <select name="idea" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Select Idea --</option>
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}" {% if selected_idea and selected_idea.id == idea.id %}selected{% endif %}>{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      {% if terms %}
+      <div class="card glass-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h5 class="card-title">Terms & Conditions - {{ selected_idea.startup_name }}</h5>
+            <button class="btn btn-sm btn-outline-primary" onclick="copyTerms()"><i class="bi bi-clipboard"></i> Copy</button>
+          </div>
+          <pre class="mt-3 p-3 bg-dark text-light rounded" style="white-space: pre-wrap; font-size: 0.85rem;" id="termsText">{{ terms }}</pre>
+        </div>
+      </div>
+      {% elif selected_idea %}
+      <div class="card glass-card text-center py-5">
+        <i class="bi bi-file-text display-1 text-muted"></i>
+        <p class="mt-3">Generate T&C for {{ selected_idea.startup_name }}</p>
+        <a href="{% url 'terms_generator' %}?idea={{ selected_idea.id }}" class="btn btn-primary">Generate Terms</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+function copyTerms() {
+  const text = document.getElementById('termsText').textContent;
+  navigator.clipboard.writeText(text);
+}
+</script>
+{% endblock %}

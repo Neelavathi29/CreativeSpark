@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Accessibility Settings - Creative Spark{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h3 class="mb-4"><i class="bi bi-universal-access me-2 text-warning"></i>Accessibility Settings</h3>
+            <form method="post" action="{% url 'save_accessibility_prefs' %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label fw-bold">High Contrast Mode</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="high_contrast" id="highContrast" {% if prefs.high_contrast %}checked{% endif %}>
+                        <label class="form-check-label" for="highContrast">Enable high contrast for better readability</label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Font Size</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <small>A</small>
+                        <input type="range" class="form-range" name="font_size" id="fontSize" min="0.8" max="1.5" step="0.1" value="{{ prefs.font_size|default:1.0 }}" style="max-width:200px;">
+                        <big>A</big>
+                        <span class="badge bg-info" id="fontSizeLabel">{{ prefs.font_size|default:1.0 }}x</span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Font Family</label>
+                    <select name="font_family" class="form-select" style="max-width:300px;">
+                        <option value="default" {% if prefs.font_family == 'default' %}selected{% endif %}>Default</option>
+                        <option value="dyslexic" {% if prefs.font_family == 'dyslexic' %}selected{% endif %}>OpenDyslexic</option>
+                        <option value="serif" {% if prefs.font_family == 'serif' %}selected{% endif %}>Serif</option>
+                        <option value="monospace" {% if prefs.font_family == 'monospace' %}selected{% endif %}>Monospace</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Reduce Motion</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="reduce_motion" id="reduceMotion" {% if prefs.reduce_motion %}checked{% endif %}>
+                        <label class="form-check-label" for="reduceMotion">Reduce animations and transitions</label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Screen Reader Optimizations</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="screen_reader" id="screenReader" {% if prefs.screen_reader %}checked{% endif %}>
+                        <label class="form-check-label" for="screenReader">Enable enhanced ARIA labels and roles</label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Color Blind Mode</label>
+                    <select name="color_blind_mode" class="form-select" style="max-width:300px;">
+                        <option value="none" {% if prefs.color_blind_mode == 'none' %}selected{% endif %}>None</option>
+                        <option value="protanopia" {% if prefs.color_blind_mode == 'protanopia' %}selected{% endif %}>Protanopia (Red-blind)</option>
+                        <option value="deuteranopia" {% if prefs.color_blind_mode == 'deuteranopia' %}selected{% endif %}>Deuteranopia (Green-blind)</option>
+                        <option value="tritanopia" {% if prefs.color_blind_mode == 'tritanopia' %}selected{% endif %}>Tritanopia (Blue-blind)</option>
+                    </select>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'keyboard_shortcuts' %}" class="btn btn-outline-info"><i class="bi bi-keyboard me-2"></i>Keyboard Shortcuts</a>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-save me-2"></i>Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('fontSize').addEventListener('input', function(){
+    document.getElementById('fontSizeLabel').textContent = this.value + 'x';
+    document.documentElement.style.fontSize = (16 * parseFloat(this.value)) + 'px';
+});
+</script>
+{% endblock %}

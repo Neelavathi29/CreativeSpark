@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Due Diligence - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-check2-square me-2 text-warning"></i>Due Diligence Checklist</h3>
+    <a href="{% url 'due_diligence_add' idea.pk %}" class="btn btn-warning"><i class="bi bi-plus-circle me-2"></i>Add Item</a>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3">Checklist for: <strong>{{ idea.startup_name }}</strong></h5>
+            <div class="progress mb-3" style="height:8px;">
+                <div class="progress-bar bg-warning" style="width:{{ progress|default:45 }}%">{{ progress|default:45 }}%</div>
+            </div>
+            {% for item in checklist %}
+            <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                <div class="form-check me-3">
+                    <input class="form-check-input" type="checkbox" {% if item.completed %}checked{% endif %} onchange="toggleItem({{ item.pk }})">
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-1 {% if item.completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</h6>
+                        <span class="badge bg-{% if item.priority == 'high' %}danger{% elif item.priority == 'medium' %}warning{% else %}info{% endif %}">{{ item.get_priority_display }}</span>
+                    </div>
+                    <p class="small text-muted mb-1">{{ item.description }}</p>
+                    <small class="text-muted">Assigned to: {{ item.assigned_to.username|default:"Unassigned" }} &middot; Due: {{ item.due_date|date:"M d, Y"|default:"No deadline" }}</small>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-4">
+                <i class="bi bi-check2-square display-4 text-muted"></i>
+                <p class="text-muted mt-2">No due diligence items yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-pie-chart me-2 text-warning"></i>Progress</h5>
+            <div class="text-center">
+                <canvas id="progressChart" height="200"></canvas>
+                <h3 class="mt-2">{{ completed_count|default:5 }}/{{ total_count|default:11 }}</h3>
+                <small class="text-muted">Items Completed</small>
+            </div>
+        </div>
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-tag me-2 text-warning"></i>Categories</h5>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between"><span>Legal</span><span class="badge bg-danger">{{ legal_count|default:2 }}</span></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Financial</span><span class="badge bg-warning">{{ financial_count|default:3 }}</span></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Technical</span><span class="badge bg-info">{{ technical_count|default:4 }}</span></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Market</span><span class="badge bg-success">{{ market_count|default:2 }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function toggleItem(pk){ fetch('{% url "due_diligence" idea.pk %}', {method:'POST', headers:{'X-CSRFToken':'{{ csrf_token }}', 'Content-Type':'application/json'}, body:JSON.stringify({item:pk})}).then(r=>r.json()).then(d=>{ if(d.success) location.reload(); }); }
+{% if total_count %}
+new Chart(document.getElementById('progressChart'), {
+    type: 'doughnut',
+    data: { labels: ['Completed', 'Remaining'], datasets: [{ data: [{{ completed_count|default:5 }}, {{ total_count|default:11 }} - {{ completed_count|default:5 }}], backgroundColor: ['#ffc107', '#e9ecef'] }] },
+    options: { cutout: '70%', plugins: { legend: { display: false } } }
+});
+{% endif %}
+</script>
+{% endblock %}

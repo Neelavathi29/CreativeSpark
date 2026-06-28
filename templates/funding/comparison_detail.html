@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Comparison Detail - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-arrow-left-right me-2 text-warning"></i>Startup Comparison</h3>
+    <a href="{% url 'startup_comparison' %}" class="btn btn-outline-warning">Back to Comparisons</a>
+</div>
+<div class="glass-card p-4">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:25%;">Metric</th>
+                    <th style="width:37.5%;" class="text-center">
+                        <div>{% if comparison.idea1.logo %}<img src="{{ comparison.idea1.logo.url }}" width="32" height="32" class="rounded me-2">{% endif %}{{ comparison.idea1.startup_name }}</div>
+                    </th>
+                    <th style="width:37.5%;" class="text-center">
+                        <div>{% if comparison.idea2.logo %}<img src="{{ comparison.idea2.logo.url }}" width="32" height="32" class="rounded me-2">{% endif %}{{ comparison.idea2.startup_name }}</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Founder</strong></td><td class="text-center">{{ comparison.idea1.founder_name }}</td><td class="text-center">{{ comparison.idea2.founder_name }}</td></tr>
+                <tr><td><strong>Industry</strong></td><td class="text-center">{{ comparison.idea1.get_industry_display }}</td><td class="text-center">{{ comparison.idea2.get_industry_display }}</td></tr>
+                <tr><td><strong>Status</strong></td><td class="text-center"><span class="badge bg-{% if comparison.idea1.status == 'approved' %}success{% elif comparison.idea1.status == 'rejected' %}danger{% else %}info{% endif %}">{{ comparison.idea1.get_status_display }}</span></td><td class="text-center"><span class="badge bg-{% if comparison.idea2.status == 'approved' %}success{% elif comparison.idea2.status == 'rejected' %}danger{% else %}info{% endif %}">{{ comparison.idea2.get_status_display }}</span></td></tr>
+                <tr><td><strong>Investment Required</strong></td><td class="text-center">${{ comparison.idea1.required_investment }}</td><td class="text-center">${{ comparison.idea2.required_investment }}</td></tr>
+                <tr><td><strong>Timeline</strong></td><td class="text-center">{{ comparison.idea1.expected_timeline }}</td><td class="text-center">{{ comparison.idea2.expected_timeline }}</td></tr>
+                {% if comparison.idea1.ai_evaluation and comparison.idea2.ai_evaluation %}
+                <tr><td><strong>AI Score</strong></td><td class="text-center"><span class="badge bg-warning fs-6">{{ comparison.idea1.ai_evaluation.overall_rating }}</span></td><td class="text-center"><span class="badge bg-warning fs-6">{{ comparison.idea2.ai_evaluation.overall_rating }}</span></td></tr>
+                <tr><td><strong>Innovation</strong></td><td class="text-center">{{ comparison.idea1.ai_evaluation.innovation_score }}/100</td><td class="text-center">{{ comparison.idea2.ai_evaluation.innovation_score }}/100</td></tr>
+                <tr><td><strong>Feasibility</strong></td><td class="text-center">{{ comparison.idea1.ai_evaluation.feasibility_score }}/100</td><td class="text-center">{{ comparison.idea2.ai_evaluation.feasibility_score }}/100</td></tr>
+                <tr><td><strong>Market Potential</strong></td><td class="text-center">{{ comparison.idea1.ai_evaluation.market_potential }}/100</td><td class="text-center">{{ comparison.idea2.ai_evaluation.market_potential }}/100</td></tr>
+                {% endif %}
+                <tr><td><strong>Likes</strong></td><td class="text-center"><i class="bi bi-heart text-danger me-1"></i>{{ comparison.idea1.likes_count }}</td><td class="text-center"><i class="bi bi-heart text-danger me-1"></i>{{ comparison.idea2.likes_count }}</td></tr>
+                <tr><td><strong>Views</strong></td><td class="text-center"><i class="bi bi-eye me-1"></i>{{ comparison.idea1.views_count }}</td><td class="text-center"><i class="bi bi-eye me-1"></i>{{ comparison.idea2.views_count }}</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

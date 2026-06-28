@@ -16,18 +16,10 @@ class Investor(models.Model):
     description = models.TextField()
     website = models.URLField(blank=True, null=True)
     logo = models.ImageField(upload_to="investors/", blank=True, null=True)
-    min_investment = models.DecimalField(
-        max_digits=15, decimal_places=2, default=0
-    )
-    max_investment = models.DecimalField(
-        max_digits=15, decimal_places=2, default=0
-    )
-    preferred_stages = models.CharField(
-        max_length=200, help_text="Comma separated stages"
-    )
-    preferred_industries = models.TextField(
-        help_text="Comma separated industries"
-    )
+    min_investment = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    max_investment = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    preferred_stages = models.CharField(max_length=200, help_text="Comma separated stages")
+    preferred_industries = models.TextField(help_text="Comma separated industries")
     location = models.CharField(max_length=200, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     contact_email = models.EmailField(blank=True, null=True)
@@ -38,40 +30,23 @@ class Investor(models.Model):
 
 
 class FundingApplication(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="funding_applications",
-    )
-    idea = models.ForeignKey(
-        "ideas.StartupIdea",
-        on_delete=models.CASCADE,
-        related_name="funding_applications",
-    )
-    investor = models.ForeignKey(
-        Investor, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="funding_applications")
+    idea = models.ForeignKey("ideas.StartupIdea", on_delete=models.CASCADE, related_name="funding_applications")
+    investor = models.ForeignKey(Investor, on_delete=models.SET_NULL, null=True, blank=True)
     amount_requested = models.DecimalField(max_digits=15, decimal_places=2)
     pitch_summary = models.TextField()
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("draft", "Draft"),
-            ("submitted", "Submitted"),
-            ("reviewing", "Under Review"),
-            ("accepted", "Accepted"),
-            ("rejected", "Rejected"),
-        ],
-        default="draft",
-    )
+    status = models.CharField(max_length=20, choices=[
+        ("draft", "Draft"),
+        ("submitted", "Submitted"),
+        ("reviewing", "Under Review"),
+        ("accepted", "Accepted"),
+        ("rejected", "Rejected"),
+    ], default="draft")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return (
-            f"{self.idea.startup_name}"
-            f" - {self.investor.name if self.investor else 'Direct'}"
-        )
+        return f"{self.idea.startup_name} - {self.investor.name if self.investor else 'Direct'}"
 
 
 class Incubator(models.Model):
@@ -87,9 +62,7 @@ class Incubator(models.Model):
     logo = models.ImageField(upload_to="incubators/", blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     focus_industries = models.TextField(help_text="Comma separated industries")
-    programs = models.TextField(
-        blank=True, null=True, help_text="Description of programs offered"
-    )
+    programs = models.TextField(blank=True, null=True, help_text="Description of programs offered")
     funding_range = models.CharField(max_length=200, blank=True, null=True)
     application_link = models.URLField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -100,3 +73,51 @@ class Incubator(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class InvestorWatchlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="investor_watchlist")
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="watchlisted_by")
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["user", "investor"]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.investor.name}"
+
+
+class DueDiligenceChecklist(models.Model):
+    idea = models.ForeignKey("ideas.StartupIdea", on_delete=models.CASCADE, related_name="due_diligence_items")
+    item = models.CharField(max_length=300)
+    category = models.CharField(max_length=50, choices=[
+        ("legal", "Legal"),
+        ("financial", "Financial"),
+        ("technical", "Technical"),
+        ("market", "Market"),
+        ("team", "Team"),
+        ("operations", "Operations"),
+    ], default="legal")
+    is_completed = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+    completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["category", "item"]
+
+    def __str__(self):
+        return f"{self.idea.startup_name} - {self.item[:50]}"
+
+
+class StartupComparison(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="startup_comparisons")
+    name = models.CharField(max_length=200, help_text="Comparison name/session")
+    ideas = models.ManyToManyField("ideas.StartupIdea", related_name="comparisons")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.user.username}"

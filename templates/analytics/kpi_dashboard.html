@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}KPI Dashboard - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-speedometer2 me-2 text-warning"></i>KPI Dashboard</h3>
+    {% if idea %}
+    <a href="{% url 'kpi_update' idea.pk %}" class="btn btn-warning"><i class="bi bi-plus-circle me-2"></i>Update KPI</a>
+    {% endif %}
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-people fs-1 text-primary"></i>
+            <h3>{{ kpis.user_growth|default:"+12%" }}</h3>
+            <small class="text-muted">User Growth <span class="text-success"><i class="bi bi-arrow-up"></i> 5.2%</span></small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-cash-stack fs-1 text-success"></i>
+            <h3>${{ kpis.mrr|default:"12,500" }}</h3>
+            <small class="text-muted">Monthly Recurring Revenue</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-person-check fs-1 text-info"></i>
+            <h3>{{ kpis.retention_rate|default:"94" }}%</h3>
+            <small class="text-muted">Retention Rate</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-star fs-1 text-warning"></i>
+            <h3>{{ kpis.nps_score|default:"72" }}</h3>
+            <small class="text-muted">NPS Score</small>
+        </div>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-graph-up me-2 text-warning"></i>Performance Overview</h5>
+            <canvas id="kpiChart" height="300"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-list-check me-2 text-warning"></i>Metrics Summary</h5>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between"><span>Conversion Rate</span><strong>{{ kpis.conversion_rate|default:"3.2" }}%</strong></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Churn Rate</span><strong class="text-danger">{{ kpis.churn_rate|default:"2.1" }}%</strong></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Avg. Session</span><strong>{{ kpis.avg_session|default:"4m 32s" }}</strong></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Customer LTV</span><strong>${{ kpis.ltv|default:"1,250" }}</strong></div>
+                <div class="list-group-item d-flex justify-content-between"><span>CAC</span><strong>${{ kpis.cac|default:"380" }}</strong></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Burn Rate</span><strong class="text-warning">${{ kpis.burn_rate|default:"8,000" }}/mo</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-table me-2 text-warning"></i>KPI History</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Date</th><th>MRR</th><th>Users</th><th>Retention</th><th>NPS</th><th>Conversion</th></tr></thead>
+                    <tbody>
+                        {% for record in kpi_history %}
+                        <tr>
+                            <td>{{ record.date|date:"M d, Y" }}</td>
+                            <td>${{ record.mrr }}</td>
+                            <td>{{ record.users }}</td>
+                            <td>{{ record.retention }}%</td>
+                            <td>{{ record.nps }}</td>
+                            <td>{{ record.conversion }}%</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted">No KPI history available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('kpiChart'), {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+            { label: 'MRR ($)', data: [8000, 9500, 10200, 11000, 11800, {{ kpis.mrr|default:12500 }}], borderColor: '#198754', tension: 0.3, fill: false },
+            { label: 'Users', data: [450, 520, 610, 700, 780, {{ kpis.users|default:850 }}], borderColor: '#0d6efd', tension: 0.3, fill: false }
+        ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } } }
+});
+</script>
+{% endblock %}

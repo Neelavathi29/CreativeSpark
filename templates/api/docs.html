@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}API Documentation - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-code-slash me-2 text-warning"></i>API Documentation</h3>
+    <div>
+        <a href="{% url 'api_token' %}" class="btn btn-outline-warning"><i class="bi bi-key me-2"></i>Get API Token</a>
+        <a href="{% url 'api_keys' %}" class="btn btn-warning"><i class="bi bi-key me-2"></i>My API Keys</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="glass-card p-3 mb-4 position-sticky" style="top:80px;">
+            <h6 class="fw-bold">Endpoints</h6>
+            <nav class="nav flex-column">
+                <a class="nav-link py-1" href="#auth"><code>GET /api/token/</code></a>
+                <a class="nav-link py-1" href="#ideas"><code>GET /api/ideas/</code></a>
+                <a class="nav-link py-1" href="#idea-detail"><code>GET /api/ideas/:id/</code></a>
+                <a class="nav-link py-1" href="#investors"><code>GET /api/investors/</code></a>
+                <a class="nav-link py-1" href="#webhook"><code>POST /api/webhook/</code></a>
+                <a class="nav-link py-1" href="#health"><code>GET /api/health/</code></a>
+            </nav>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="glass-card p-4 mb-4" id="auth">
+            <h5><code>GET /api/token/</code></h5>
+            <p class="text-muted">Obtain an API authentication token.</p>
+            <h6>Headers</h6>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "Authorization": "Basic &lt;base64(username:password)&gt;"
+}</code></pre>
+            <h6>Response</h6>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "token": "your-api-token-here",
+  "expires": "2026-12-31T23:59:59Z"
+}</code></pre>
+        </div>
+        <div class="glass-card p-4 mb-4" id="ideas">
+            <h5><code>GET /api/ideas/</code></h5>
+            <p class="text-muted">List all startup ideas with optional filters.</p>
+            <h6>Query Parameters</h6>
+            <table class="table table-sm"><thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead><tbody>
+                <tr><td><code>q</code></td><td>string</td><td>Search query</td></tr>
+                <tr><td><code>category</code></td><td>string</td><td>Filter by category slug</td></tr>
+                <tr><td><code>status</code></td><td>string</td><td>Filter by status</td></tr>
+                <tr><td><code>page</code></td><td>int</td><td>Page number</td></tr>
+            </tbody></table>
+            <h6>Example</h6>
+            <pre class="bg-dark text-light p-3 rounded"><code>curl -H "Authorization: Token your-api-token" \
+  "https://creativespark.io/api/ideas/?category=fintech&page=1"</code></pre>
+        </div>
+        <div class="glass-card p-4 mb-4" id="investors">
+            <h5><code>GET /api/investors/</code></h5>
+            <p class="text-muted">List registered investors and funding sources.</p>
+        </div>
+        <div class="glass-card p-4 mb-4" id="webhook">
+            <h5><code>POST /api/webhook/</code></h5>
+            <p class="text-muted">Receive webhook events from third-party services.</p>
+        </div>
+        <div class="glass-card p-4 mb-4" id="health">
+            <h5><code>GET /api/health/</code></h5>
+            <p class="text-muted">Health check endpoint.</p>
+            <h6>Response</h6>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "status": "healthy",
+  "database": "connected",
+  "version": "1.0.0",
+  "uptime": "72h 15m"
+}</code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

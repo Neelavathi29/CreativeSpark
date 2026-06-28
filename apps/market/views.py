@@ -13,7 +13,6 @@ from .models import (
 from apps.ideas.models import StartupIdea
 
 
-@login_required
 def market_analysis(request, pk=None):
     idea = None
     analysis = None

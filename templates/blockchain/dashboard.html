@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Blockchain Dashboard - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-link-45deg me-2 text-warning"></i>Blockchain Timestamp Dashboard</h3>
+    {% if idea %}
+    <a href="{% url 'timestamp_idea' idea.pk %}" class="btn btn-warning"><i class="bi bi-shield-check me-2"></i>Timestamp Idea</a>
+    {% endif %}
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-file-earmark-check fs-1 text-success"></i>
+            <h3>{{ total_certificates|default:"24" }}</h3>
+            <small class="text-muted">Certificates Issued</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-link fs-1 text-primary"></i>
+            <h3>{{ pending_timestamps|default:"3" }}</h3>
+            <small class="text-muted">Pending Timestamps</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-shield-check fs-1 text-info"></i>
+            <h3>{{ verified_count|default:"21" }}</h3>
+            <small class="text-muted">Verified</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-hash fs-1 text-warning"></i>
+            <h3 class="small" style="word-break:break-all;">{{ latest_block|default:"0x7a8f...b3e2" }}</h3>
+            <small class="text-muted">Latest Block</small>
+        </div>
+    </div>
+</div>
+<div class="glass-card p-4">
+    <h5 class="mb-3"><i class="bi bi-clock-history me-2 text-warning"></i>Recent Timestamps</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>ID</th><th>Idea</th><th>Timestamp</th><th>TX Hash</th><th>Status</th><th>Certificate</th></tr></thead>
+            <tbody>
+                {% for cert in certificates %}
+                <tr>
+                    <td>#{{ cert.pk }}</td>
+                    <td>{{ cert.idea.startup_name }}</td>
+                    <td>{{ cert.timestamp|date:"M d, Y H:i" }}</td>
+                    <td><code>{{ cert.tx_hash|truncatechars:20 }}</code></td>
+                    <td><span class="badge bg-{% if cert.is_verified %}success{% else %}warning{% endif %}">{% if cert.is_verified %}Verified{% else %}Pending{% endif %}</span></td>
+                    <td><a href="{% url 'blockchain_certificate' cert.pk %}" class="btn btn-sm btn-outline-warning"><i class="bi bi-file-earmark"></i> View</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">No certificates yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

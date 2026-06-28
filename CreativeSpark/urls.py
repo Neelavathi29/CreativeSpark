@@ -17,6 +17,12 @@ urlpatterns = [
     path("gamification/", include("apps.gamification.urls")),
     path("productivity/", include("apps.productivity.urls")),
     path("funding/", include("apps.funding.urls")),
+    path("collaboration/", include("apps.collaboration.urls")),
+    path("canvas/", include("apps.canvas.urls")),
+    path("analytics/", include("apps.analytics.urls")),
+    path("api/", include("apps.api.urls")),
+    path("accessibility/", include("apps.accessibility.urls")),
+    path("blockchain/", include("apps.blockchain.urls")),
 ]
 
 handler404 = "CreativeSpark.views.handler404"

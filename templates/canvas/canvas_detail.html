@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ canvas.title }} - Canvas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1"><i class="bi bi-grid-3x3-gap me-2 text-warning"></i>{{ canvas.title }}</h3>
+        <small class="text-muted">{{ canvas.get_canvas_type_display }} &middot; Updated {{ canvas.updated_at|timesince }} ago</small>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-warning btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print</button>
+        <a href="{% url 'canvas_create' %}?edit={{ canvas.pk %}" class="btn btn-outline-info btn-sm"><i class="bi bi-pencil me-1"></i>Edit</a>
+    </div>
+</div>
+<div class="row g-3">
+    {% for section in sections %}
+    <div class="col-md-{% if section.span %}12{% else %}4{% endif %}">
+        <div class="glass-card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0 fw-bold">{{ section.title }}</h6>
+                <button class="btn btn-sm btn-link text-warning edit-section" data-section="{{ section.key }}"><i class="bi bi-pencil"></i></button>
+            </div>
+            <div class="section-content" id="section-{{ section.key }}">
+                <p class="small mb-0">{{ section.content|linebreaks }}</p>
+            </div>
+            <div class="section-edit d-none mt-2">
+                <textarea class="form-control form-control-sm" rows="3">{{ section.content }}</textarea>
+                <button class="btn btn-sm btn-warning mt-1 save-section" data-section="{{ section.key }}">Save</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.querySelectorAll('.edit-section').forEach(btn => {
+    btn.addEventListener('click', function(){
+        const key = this.dataset.section;
+        document.getElementById('section-' + key).classList.toggle('d-none');
+        this.closest('.glass-card').querySelector('.section-edit').classList.toggle('d-none');
+    });
+});
+document.querySelectorAll('.save-section').forEach(btn => {
+    btn.addEventListener('click', function(){
+        const key = this.dataset.section;
+        const content = this.previousElementSibling.value;
+        fetch(window.location.pathname + 'update/', {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+            body: JSON.stringify({section: key, content: content})
+        }).then(r => r.json()).then(d => { if(d.success) location.reload(); });
+    });
+});
+</script>
+{% endblock %}

@@ -1,209 +1,263 @@
 {% extends 'base.html' %}
-{% block title %}AI Tools Hub - Creative Spark{% endblock %}
+{% load static %}
+{% block title %}AI Tools Hub{% endblock %}
 {% block content %}
-<h2 class="page-title mb-4"><i class="bi bi-robot me-2 text-warning"></i>AI-Powered Startup Tools Hub</h2>
-
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="glass-card p-3">
-            <form method="get" class="row g-2 align-items-center">
-                <div class="col-auto"><label class="form-label mb-0 fw-bold">Select Idea:</label></div>
-                <div class="col-md-4"><select name="idea" class="form-select" onchange="this.form.submit()"><option value="">General Tools</option>{% for i in ideas %}<option value="{{ i.pk }}" {% if selected_idea and selected_idea.pk == i.pk %}selected{% endif %}>{{ i.startup_name }}</option>{% endfor %}</select></div>
-                <div class="col-auto text-muted"><small>Select an idea for idea-specific tools</small></div>
-            </form>
-        </div>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-robot"></i> AI Tools Hub</h2>
+    <div>
+      <a href="{% url 'sentiment_analysis' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-emoji-smile"></i> Sentiment</a>
+      <a href="{% url 'tag_generator' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-tags"></i> Tags</a>
+      <a href="{% url 'rag_chat' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-chat-dots"></i> RAG Chat</a>
+      <a href="{% url 'pitch_analyzer' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-easel"></i> Pitch</a>
+      <a href="{% url 'elevator_pitch' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-mic"></i> Elevator</a>
+      <a href="{% url 'legal_checklist' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-check2-square"></i> Legal</a>
+      <a href="{% url 'terms_generator' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-text"></i> T&C</a>
+      <a href="{% url 'pitch_deck_generator' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-slides"></i> Pitch Deck</a>
+      <a href="{% url 'business_plan_generator' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-text"></i> Biz Plan</a>
     </div>
-</div>
+  </div>
 
-<div class="row g-4">
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-magic"></i> Startup Name Generator</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="generate_name">
+            <div class="mb-3">
+              <label class="form-label">Industry</label>
+              <select name="industry" class="form-select">
+                {% for key, val in industries %}
+                <option value="{{ key }}">{{ val }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Generate Names</button>
+          </form>
+          {% if name_result %}
+          <div class="mt-3 p-3 bg-light rounded">
+            <h6>Suggested Names:</h6>
+            <p class="fs-5 fw-bold text-primary">{{ name_result }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-cash-coin"></i> Investor Readiness</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="investor_readiness">
+            <div class="mb-3">
+              <label class="form-label">Select Idea</label>
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Calculate Readiness</button>
+          </form>
+          {% if readiness %}
+          <div class="mt-3 p-3 bg-light rounded">
+            <h6>Score: <span class="badge bg-{% if readiness.score >= 70 %}success{% elif readiness.score >= 40 %}warning{% else %}danger{% endif %} fs-6">{{ readiness.score }}/{{ readiness.max_score }}</span></h6>
+            <p>Level: <strong>{{ readiness.level }}</strong></p>
+            {% if readiness.gaps %}
+            <small>Improvements:</small>
+            <ul class="small">
+              {% for gap in readiness.gaps %}
+              <li>{{ gap }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-graph-up"></i> Success Prediction</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="success_prediction">
+            <div class="mb-3">
+              <label class="form-label">Select Idea</label>
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Predict Success</button>
+          </form>
+          {% if success_prediction %}
+          <div class="mt-3 p-3 bg-light rounded">
+            <h6>Prediction: <span class="badge bg-{% if success_prediction.prediction == 'Very High' or success_prediction.prediction == 'High' %}success{% else %}warning{% endif %}">{{ success_prediction.prediction }}</span></h6>
+            <canvas id="successRadar" height="200"></canvas>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
     <div class="col-lg-6">
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-magic me-2 text-warning"></i>Startup Name Generator</h5>
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="generate_name">
-                <div class="mb-2"><select name="industry" class="form-control">
-                    <option value="technology">Technology</option><option value="healthcare">Healthcare</option>
-                    <option value="education">Education</option><option value="finance">Finance</option>
-                    <option value="ecommerce">E-Commerce</option><option value="environment">Environment</option>
-                </select></div>
-                <button type="submit" class="btn btn-warning"><i class="bi bi-magic me-1"></i>Generate Name</button>
-            </form>
-            {% if name_result %}<div class="mt-3 alert alert-success"><h4 class="mb-0"><i class="bi bi-lightbulb me-2"></i>{{ name_result }}</h4></div>{% endif %}
-        </div>
-
-        {% if selected_idea %}
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-file-text me-2 text-warning"></i>Executive Summary Generator</h5>
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="executive_summary">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-file-text me-1"></i>Generate Summary</button>
-            </form>
-            {% if executive_summary %}
-            <div class="mt-3 p-3 bg-light rounded-3">
-                <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">{{ executive_summary }}</pre>
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-file-text"></i> Business Plan</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="business_plan">
+            <div class="mb-3">
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        {% if competitor_data %}
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-flag me-2 text-warning"></i>Competitor Comparison</h5>
-            <canvas id="competitorChart" data-our="{{ competitor_data.our_strength }}" data-c1="{{ competitor_data.competitors.0.strength }}" data-c2="{{ competitor_data.competitors.1.strength }}" data-c3="{{ competitor_data.competitors.2.strength }}"></canvas>
-        </div>
-        {% endif %}
-
-        {% if selected_idea %}
-        <div class="glass-card p-4">
-            <h5><i class="bi bi-graph-up-arrow me-2 text-warning"></i>Funding Probability</h5>
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="funding_probability">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-graph-up-arrow me-1"></i>Calculate Probability</button>
-            </form>
-            {% if funding_probability %}
-            <div class="mt-3 text-center">
-                <div class="d-inline-block position-relative">
-                    <canvas id="fundingProbChart" width="150" height="150" data-score="{{ funding_probability.score }}"></canvas>
-                    <div class="position-absolute top-50 start-50 translate-middle">
-                        <h3 class="mb-0 fw-bold">{{ funding_probability.score }}%</h3>
-                    </div>
-                </div>
-                <span class="badge {% if funding_probability.level == 'High' %}bg-success{% elif funding_probability.level == 'Medium' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 d-block mt-2">{{ funding_probability.level }} Probability</span>
-                {% if funding_probability.factors %}
-                <hr><h6>Key Factors:</h6>
-                <ul class="text-start small">
-                    {% for factor in funding_probability.factors %}
-                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i>{{ factor }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+            <button type="submit" class="btn btn-primary w-100">Generate Plan</button>
+          </form>
+          {% if business_plan %}
+          <div class="mt-3">
+            {% for title, content in business_plan %}
+            <div class="mb-2 p-2 bg-light rounded">
+              <strong>{{ title }}:</strong>
+              <small>{{ content|truncatechars:150 }}</small>
             </div>
-            {% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
+      </div>
     </div>
 
     <div class="col-lg-6">
-        {% if selected_idea %}
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-journal-text me-2 text-warning"></i>Business Plan Generator</h5>
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="business_plan">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-journal-text me-1"></i>Generate Business Plan</button>
-            </form>
-            {% if business_plan %}
-            <div class="mt-3"><div class="accordion" id="bpAccordion">{% for section, content in business_plan %}
-                <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bp{{ forloop.counter }}">{{ section }}</button></h2>
-                <div id="bp{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#bpAccordion">
-                <div class="accordion-body">{{ content }}</div></div></div>{% endfor %}</div></div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-shield-check me-2 text-warning"></i>Investor Readiness Score</h5>
-            {% if selected_idea %}
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="investor_readiness">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-shield-check me-1"></i>Check Readiness</button>
-            </form>
-            {% endif %}
-            {% if readiness %}
-            <div class="mt-3 text-center">
-                <h1 class="text-warning">{{ readiness.score }}/{{ readiness.max_score }}</h1>
-                <span class="badge bg-{% if readiness.level == 'Seed' %}danger{% elif readiness.level == 'Early' %}warning{% elif readiness.level == 'Growth' %}info{% else %}success{% endif %} fs-6">{{ readiness.level }} Stage</span>
-                <hr><h6>Improvement Areas:</h6><ul class="text-start">{% for gap in readiness.gaps %}<li class="small">{{ gap }}</li>{% endfor %}</ul>
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-currency-dollar"></i> Valuation Calculator</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="valuation">
+            <div class="mb-3">
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            {% endif %}
+            <button type="submit" class="btn btn-primary w-100">Calculate Valuation</button>
+          </form>
+          {% if valuation %}
+          <div class="mt-3 p-3 bg-light rounded text-center">
+            <h6>Estimated Valuation</h6>
+            <h3 class="text-success">${{ valuation|floatformat:0 }}</h3>
+          </div>
+          {% endif %}
         </div>
-
-        {% if selected_idea %}
-        <div class="glass-card p-4 mb-4">
-            <h5><i class="bi bi-trophy me-2 text-warning"></i>Success Prediction Gauge</h5>
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="success_prediction">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-trophy me-1"></i>Predict Success</button>
-            </form>
-            {% if success_prediction %}
-            <div class="mt-3">
-                <div class="text-center mb-3">
-                    <canvas id="successGauge" width="180" height="180" data-score="{{ success_prediction.scores.overall }}" data-max="{{ success_prediction.max_score }}"></canvas>
-                    <div class="mt-2">
-                        <span class="badge {% if success_prediction.prediction == 'Very High' %}bg-success{% elif success_prediction.prediction == 'High' %}bg-primary{% elif success_prediction.prediction == 'Moderate' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-5">
-                            {{ success_prediction.prediction }} Success Probability
-                        </span>
-                    </div>
-                </div>
-                <div class="row g-2 text-center">
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Innovation</small><strong>{{ success_prediction.scores.innovation }}</strong></div></div>
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Feasibility</small><strong>{{ success_prediction.scores.feasibility }}</strong></div></div>
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Market</small><strong>{{ success_prediction.scores.market_potential }}</strong></div></div>
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Scalability</small><strong>{{ success_prediction.scores.scalability }}</strong></div></div>
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Risk</small><strong>{{ success_prediction.scores.risk }}</strong></div></div>
-                    <div class="col-4"><div class="bg-light rounded-3 p-2"><small class="text-muted d-block">Funding Prob</small><strong>{{ success_prediction.scores.funding_probability }}%</strong></div></div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="glass-card p-4">
-            <h5><i class="bi bi-calculator me-2 text-warning"></i>Startup Valuation</h5>
-            {% if selected_idea %}
-            <form method="post">{% csrf_token %}<input type="hidden" name="action" value="valuation">
-                <button type="submit" class="btn btn-warning"><i class="bi bi-calculator me-1"></i>Calculate Valuation</button>
-            </form>
-            {% endif %}
-            {% if valuation %}
-            <div class="mt-3 text-center"><h2 class="text-success fw-bold">${{ valuation|floatformat:0 }}</h2><small class="text-muted">Estimated Valuation</small></div>
-            {% endif %}
-        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-{% if financials %}
-<div class="glass-card p-4 mt-4">
-    <h5><i class="bi bi-bar-chart me-2 text-warning"></i>5-Year Financial Projection</h5>
-    <canvas id="financialChart"
-        data-labels='[{% for f in financials %}&quot;Year {{ f.year }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]'
-        data-revenue='[{% for f in financials %}{{ f.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}]'
-        data-costs='[{% for f in financials %}{{ f.costs }}{% if not forloop.last %},{% endif %}{% endfor %}]'
-        data-profit='[{% for f in financials %}{{ f.profit }}{% if not forloop.last %},{% endif %}{% endfor %}]'>
-    </canvas>
+  <div class="row mt-3">
+    <div class="col-lg-6">
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-people"></i> Competitor Analysis</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="competitor_analysis">
+            <div class="mb-3">
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Analyze</button>
+          </form>
+          {% if competitor_data %}
+          <div class="mt-3">
+            <p>Your Strength: <strong>{{ competitor_data.our_strength }}/100</strong> (Rank: #{{ competitor_data.our_ranking }})</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card glass-card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-lightbulb"></i> Executive Summary</h5>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="executive_summary">
+            <div class="mb-3">
+              <select name="idea" class="form-select">
+                {% for idea in ideas %}
+                <option value="{{ idea.id }}">{{ idea.startup_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Generate Summary</button>
+          </form>
+          {% if executive_summary %}
+          <div class="mt-3 p-3 bg-light rounded">
+            <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.85rem;">{{ executive_summary }}</pre>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-bar-chart"></i> All AI-Powered Tools</h5>
+          <div class="row">
+            <div class="col-md-3 mb-2"><a href="{% url 'sentiment_analysis' %}" class="btn btn-outline-primary w-100"><i class="bi bi-emoji-smile"></i> Sentiment Analysis</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'tag_generator' %}" class="btn btn-outline-primary w-100"><i class="bi bi-tags"></i> Tag Generator</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'legal_checklist' %}" class="btn btn-outline-primary w-100"><i class="bi bi-check2-square"></i> Legal Checklist</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'terms_generator' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-text"></i> Terms & Conditions</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'pitch_analyzer' %}" class="btn btn-outline-primary w-100"><i class="bi bi-easel"></i> Pitch Analyzer</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'elevator_pitch' %}" class="btn btn-outline-primary w-100"><i class="bi bi-mic"></i> Elevator Pitch</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'rag_chat' %}" class="btn btn-outline-primary w-100"><i class="bi bi-chat-dots"></i> RAG Chat</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'pitch_deck_generator' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-slides"></i> Pitch Deck Gen</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'business_plan_generator' %}" class="btn btn-outline-primary w-100"><i class="bi bi-file-earmark-text"></i> Business Plan Gen</a></div>
+            <div class="col-md-3 mb-2"><a href="#" onclick="alert('Select a startup idea first from My Ideas page, then click Evaluate to see the Innovation Radar.');" class="btn btn-outline-primary w-100"><i class="bi bi-radar"></i> Innovation Radar</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'funding_probability' %}" class="btn btn-outline-primary w-100"><i class="bi bi-graph-up-arrow"></i> Funding Prob.</a></div>
+            <div class="col-md-3 mb-2"><a href="{% url 'health_dashboard' %}" class="btn btn-outline-primary w-100"><i class="bi bi-heart-pulse"></i> Health Score</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{% endif %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var probEl = document.getElementById('fundingProbChart');
-    if (probEl) {
-        var score = parseFloat(probEl.dataset.score) || 0;
-        new Chart(probEl, {
-            type: 'doughnut',
-            data: {
-                labels: ['Score', 'Remaining'],
-                datasets: [{
-                    data: [score, 100 - score],
-                    backgroundColor: [score >= 70 ? '#198754' : score >= 40 ? '#ffc107' : '#dc3545', '#e9ecef'],
-                    borderWidth: 0,
-                }]
-            },
-            options: { cutout: '75%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-        });
-    }
-
-    var gaugeEl = document.getElementById('successGauge');
-    if (gaugeEl) {
-        var score = parseFloat(gaugeEl.dataset.score) || 0;
-        var maxScore = parseFloat(gaugeEl.dataset.max) || 5;
-        var pct = (score / maxScore) * 100;
-        new Chart(gaugeEl, {
-            type: 'doughnut',
-            data: {
-                labels: ['Success Probability', 'Remaining'],
-                datasets: [{
-                    data: [pct, 100 - pct],
-                    backgroundColor: [pct >= 80 ? '#198754' : pct >= 60 ? '#0d6efd' : pct >= 40 ? '#ffc107' : '#dc3545', '#e9ecef'],
-                    borderWidth: 0,
-                }]
-            },
-            options: { cutout: '80%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-        });
-    }
+{% if success_prediction %}
+new Chart(document.getElementById('successRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['Innovation', 'Feasibility', 'Market', 'Scalability', 'Risk'],
+    datasets: [{
+      data: [{{ success_prediction.scores.innovation }}, {{ success_prediction.scores.feasibility }}, {{ success_prediction.scores.market_potential }}, {{ success_prediction.scores.scalability }}, {{ success_prediction.scores.risk }}],
+      backgroundColor: 'rgba(13, 110, 253, 0.2)',
+      borderColor: 'rgba(13, 110, 253, 1)'
+    }]
+  },
+  options: { scales: { r: { min: 0, max: 100 } } }
 });
+{% endif %}
 </script>
 {% endblock %}

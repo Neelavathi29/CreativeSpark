@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Webhooks Documentation - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-webhook me-2 text-warning"></i>Webhooks Documentation</h3>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3">What are Webhooks?</h5>
+            <p>Webhooks allow third-party services to receive real-time notifications when events occur on the Creative Spark platform. When a supported event happens, we send an HTTP POST request to your configured endpoint with a JSON payload.</p>
+        </div>
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3">Supported Events</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Event</th><th>Description</th><th>Payload</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>idea.created</code></td><td>A new startup idea is submitted</td><td><a href="#payload-idea" class="btn btn-sm btn-link">View</a></td></tr>
+                        <tr><td><code>idea.updated</code></td><td>An idea is updated</td><td><a href="#payload-idea" class="btn btn-sm btn-link">View</a></td></tr>
+                        <tr><td><code>idea.approved</code></td><td>An idea is approved</td><td><a href="#payload-idea" class="btn btn-sm btn-link">View</a></td></tr>
+                        <tr><td><code>funding.applied</code></td><td>A funding application is submitted</td><td><a href="#payload-funding" class="btn btn-sm btn-link">View</a></td></tr>
+                        <tr><td><code>user.registered</code></td><td>A new user registers</td><td><a href="#payload-user" class="btn btn-sm btn-link">View</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="glass-card p-4 mb-4" id="payload-idea">
+            <h5 class="mb-3">Idea Event Payload</h5>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "event": "idea.created",
+  "timestamp": "2026-06-28T12:00:00Z",
+  "data": {
+    "id": 123,
+    "startup_name": "EcoTech",
+    "status": "submitted",
+    "founder_name": "John Doe",
+    "created_at": "2026-06-28T12:00:00Z"
+  }
+}</code></pre>
+        </div>
+        <div class="glass-card p-4 mb-4" id="payload-funding">
+            <h5 class="mb-3">Funding Event Payload</h5>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "event": "funding.applied",
+  "timestamp": "2026-06-28T12:00:00Z",
+  "data": {
+    "id": 456,
+    "idea_id": 123,
+    "investor": "Tech Ventures",
+    "amount_requested": 500000,
+    "status": "pending"
+  }
+}</code></pre>
+        </div>
+        <div class="glass-card p-4" id="payload-user">
+            <h5 class="mb-3">User Event Payload</h5>
+            <pre class="bg-dark text-light p-3 rounded"><code>{
+  "event": "user.registered",
+  "timestamp": "2026-06-28T12:00:00Z",
+  "data": {
+    "id": 789,
+    "username": "jane_doe",
+    "email": "jane@example.com",
+    "role": "entrepreneur"
+  }
+}</code></pre>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-gear me-2 text-warning"></i>Configuration</h5>
+            <p class="small text-muted">To configure webhooks, go to your API Keys page and set up a webhook endpoint URL.</p>
+            <a href="{% url 'api_keys' %}" class="btn btn-warning w-100">Configure Webhooks</a>
+        </div>
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-shield-check me-2 text-warning"></i>Security</h5>
+            <p class="small text-muted">Webhook requests include a signature header <code>X-Signature</code> that you can verify using your secret key. This ensures the request is genuinely from Creative Spark.</p>
+            <pre class="bg-dark text-light p-2 rounded small"><code># Python verification
+import hmac, hashlib
+signature = request.headers['X-Signature']
+expected = hmac.new(
+  secret.encode(), 
+  request.body, 
+  hashlib.sha256
+).hexdigest()
+assert signature == expected</code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

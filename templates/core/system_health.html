@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}System Health - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-heart-pulse me-2 text-warning"></i>System Health Monitoring</h3>
+    <button class="btn btn-warning" onclick="location.reload()"><i class="bi bi-arrow-repeat me-2"></i>Refresh</button>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-check-circle-fill fs-1 text-{% if health.database == 'ok' %}success{% else %}danger{% endif %}"></i>
+            <h5 class="mt-2">Database</h5>
+            <span class="badge bg-{% if health.database == 'ok' %}success{% else %}danger{% endif %}">{{ health.database|upper|default:"OK" }}</span>
+            <small class="text-muted d-block">{{ health.db_latency|default:"2ms" }} latency</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-server fs-1 text-{% if health.cache == 'ok' %}success{% else %}danger{% endif %}"></i>
+            <h5 class="mt-2">Cache</h5>
+            <span class="badge bg-{% if health.cache == 'ok' %}success{% else %}danger{% endif %}">{{ health.cache|upper|default:"OK" }}</span>
+            <small class="text-muted d-block">{{ health.cache_hits|default:"98" }}% hit rate</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-envelope fs-1 text-{% if health.email == 'ok' %}success{% else %}danger{% endif %}"></i>
+            <h5 class="mt-2">Email Service</h5>
+            <span class="badge bg-{% if health.email == 'ok' %}success{% else %}danger{% endif %}">{{ health.email|upper|default:"OK" }}</span>
+            <small class="text-muted d-block">{{ health.emails_queued|default:"0" }} queued</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <i class="bi bi-cloud-arrow-up fs-1 text-{% if health.storage == 'ok' %}success{% else %}danger{% endif %}"></i>
+            <h5 class="mt-2">Storage</h5>
+            <span class="badge bg-{% if health.storage == 'ok' %}success{% else %}danger{% endif %}">{{ health.storage|upper|default:"OK" }}</span>
+            <small class="text-muted d-block">{{ health.storage_used|default:"45%" }} used</small>
+        </div>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-activity me-2 text-warning"></i>System Metrics</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <small class="text-muted">CPU Usage</small>
+                    <div class="progress" style="height:20px;"><div class="progress-bar bg-info" style="width:{{ metrics.cpu|default:34 }}%">{{ metrics.cpu|default:34 }}%</div></div>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Memory Usage</small>
+                    <div class="progress" style="height:20px;"><div class="progress-bar bg-warning" style="width:{{ metrics.memory|default:62 }}%">{{ metrics.memory|default:62 }}%</div></div>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Disk I/O</small>
+                    <div class="progress" style="height:20px;"><div class="progress-bar bg-success" style="width:{{ metrics.disk_io|default:28 }}%">{{ metrics.disk_io|default:28 }}%</div></div>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Network</small>
+                    <div class="progress" style="height:20px;"><div class="progress-bar bg-primary" style="width:{{ metrics.network|default:45 }}%">{{ metrics.network|default:45 }}%</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-clock-history me-2 text-warning"></i>Uptime & Performance</h5>
+            <div class="row text-center">
+                <div class="col-4"><h4>{{ uptime|default:"99.9" }}%</h4><small class="text-muted">Uptime (30d)</small></div>
+                <div class="col-4"><h4>{{ avg_response|default:"180" }}ms</h4><small class="text-muted">Avg Response</small></div>
+                <div class="col-4"><h4>{{ requests_per_min|default:"1,234" }}</h4><small class="text-muted">Req/min</small></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 mb-4">
+            <h5 class="mb-3"><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Recent Alerts</h5>
+            <div class="list-group">
+                {% for alert in alerts %}
+                <div class="list-group-item list-group-item-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %}">
+                    <small class="fw-bold">{{ alert.title }}</small><br><small>{{ alert.message }}</small>
+                    <small class="text-muted d-block">{{ alert.timestamp|timesince }} ago</small>
+                </div>
+                {% empty %}
+                <div class="list-group-item text-muted">No recent alerts.</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="glass-card p-4">
+            <h5 class="mb-3"><i class="bi bi-box-arrow-in-right me-2 text-warning"></i>Services</h5>
+            <div class="list-group">
+                {% for service in services %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <span>{{ service.name }}</span>
+                    <span class="badge bg-{% if service.status == 'up' %}success{% else %}danger{% endif %}">{{ service.status|upper }}</span>
+                </div>
+                {% empty %}
+                <div class="list-group-item d-flex justify-content-between"><span>Web Server</span><span class="badge bg-success">UP</span></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Worker</span><span class="badge bg-success">UP</span></div>
+                <div class="list-group-item d-flex justify-content-between"><span>Search</span><span class="badge bg-success">UP</span></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

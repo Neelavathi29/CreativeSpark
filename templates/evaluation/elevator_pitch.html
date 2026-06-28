@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Elevator Pitch Analyzer{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-mic"></i> AI Elevator Pitch Analyzer</h2>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Enter Your Elevator Pitch</h5>
+          <p class="text-muted small">A good elevator pitch is 50-100 words and covers: problem, solution, unique value, and target market.</p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <textarea name="pitch_text" class="form-control" rows="6" required placeholder="Hi, I'm [name] from [startup]. We help [target customer] who struggle with [problem] by [solution]. Unlike [competitors], we [unique value]..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Analyze Pitch</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      {% if result %}
+      <div class="card glass-card">
+        <div class="card-body">
+          <h5 class="card-title">Pitch Analysis</h5>
+          <div class="text-center my-3">
+            <h2 class="{% if result.overall_score >= 70 %}text-success{% elif result.overall_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ result.overall_score }}/100</h2>
+            <p class="text-muted">Overall Score</p>
+            <div class="progress" style="height: 10px;">
+              <div class="progress-bar {% if result.overall_score >= 70 %}bg-success{% elif result.overall_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ result.overall_score }}%"></div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-4 text-center">
+              <div class="border rounded p-2">
+                <small>Words</small>
+                <h5>{{ result.word_count }}</h5>
+              </div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="border rounded p-2">
+                <small>Duration</small>
+                <h5>{{ result.time_seconds }}s</h5>
+              </div>
+            </div>
+            <div class="col-4 text-center">
+              <div class="border rounded p-2">
+                <small>Sentiment</small>
+                <h5>{{ result.sentiment.sentiment }}</h5>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h6>Length: <span class="badge bg-{% if result.length_score >= 70 %}success{% else %}warning{% endif %}">{{ result.length }}</span></h6>
+            <h6>Structure: <span class="badge bg-{% if result.structure_score >= 60 %}success{% else %}warning{% endif %}">{{ result.key_elements }}</span></h6>
+            <h6>Confidence: <span class="badge bg-{% if result.confidence_score >= 60 %}success{% else %}warning{% endif %}">{{ result.confidence_score }}/100</span></h6>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

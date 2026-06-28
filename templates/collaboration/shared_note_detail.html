@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ note.title }} - Shared Note{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h3 class="fw-bold mb-1"><i class="bi bi-file-text me-2 text-warning"></i>{{ note.title }}</h3>
+                    <small class="text-muted">by {{ note.created_by.username }} &middot; Updated {{ note.updated_at|timesince }} ago</small>
+                </div>
+                <div class="d-flex gap-2">
+                    {% if note.created_by == user %}
+                    <a href="{% url 'shared_note_create' %}?edit={{ note.pk }}" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                    {% endif %}
+                    <button class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard.writeText(window.location.href)"><i class="bi bi-link-45deg"></i> Copy Link</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                {% for tag in note.tags.all %}
+                <span class="badge bg-info me-1">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            <hr>
+            <div class="note-content">
+                {{ note.content|linebreaks }}
+            </div>
+        </div>
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-chat-dots me-2 text-warning"></i>Comments ({{ comments.count }})</h5>
+            <form method="post" action="{% url 'shared_note_detail' note.pk %}" class="mb-3">
+                {% csrf_token %}
+                <div class="input-group">
+                    <textarea name="content" class="form-control" rows="2" placeholder="Add a comment..." required></textarea>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-send"></i></button>
+                </div>
+            </form>
+            {% for comment in comments %}
+            <div class="d-flex mb-3">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <div>
+                    <strong>{{ comment.user.username }}</strong> <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                    <p class="mb-0">{{ comment.content }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card p-4 mb-4">
+            <h5><i class="bi bi-clock-history me-2 text-warning"></i>Version History</h5>
+            {% for version in versions %}
+            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                <div>
+                    <small class="fw-bold">v{{ version.version_number }}</small>
+                    <br><small class="text-muted">{{ version.updated_at|timesince }} ago</small>
+                </div>
+                <small class="text-muted">{{ version.updated_by.username }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted small">No version history available.</p>
+            {% endfor %}
+        </div>
+        <div class="glass-card p-4">
+            <h5><i class="bi bi-people me-2 text-warning"></i>Collaborators</h5>
+            <div class="d-flex flex-wrap gap-2">
+                {% for collab in note.collaborators.all %}
+                <span class="badge bg-dark"><i class="bi bi-person me-1"></i>{{ collab.username }}</span>
+                {% empty %}
+                <p class="text-muted small">No other collaborators.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Activity Timeline - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-clock-history me-2 text-warning"></i>Activity Timeline</h3>
+    <div class="dropdown">
+        <button class="btn btn-outline-warning btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-funnel me-1"></i>Filter</button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="?type=all">All Activity</a></li>
+            <li><a class="dropdown-item" href="?type=note">Notes</a></li>
+            <li><a class="dropdown-item" href="?type=poll">Polls</a></li>
+            <li><a class="dropdown-item" href="?type=whiteboard">Whiteboards</a></li>
+            <li><a class="dropdown-item" href="?type=vote">Votes</a></li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="timeline position-relative">
+            {% for event in timeline_events %}
+            <div class="timeline-item d-flex mb-4 position-relative">
+                <div class="timeline-icon me-3 text-center" style="width:40px;">
+                    <div class="rounded-circle bg-warning bg-opacity-25 p-2" style="width:40px;height:40px;">
+                        <i class="bi bi-{% if event.type == 'note' %}file-text{% elif event.type == 'poll' %}bar-chart{% elif event.type == 'whiteboard' %}easel{% elif event.type == 'vote' %}hand-index-thumb{% else %}circle{% endif %} text-warning"></i>
+                    </div>
+                </div>
+                <div class="glass-card p-3 flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ event.user.username }}</strong>
+                        <small class="text-muted">{{ event.timestamp|timesince }} ago</small>
+                    </div>
+                    <p class="mb-0 small">{{ event.description }}</p>
+                    {% if event.link %}
+                    <a href="{{ event.link }}" class="btn btn-sm btn-link ps-0">View details &raquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="glass-card p-5 text-center">
+                <i class="bi bi-clock-history display-1 text-muted"></i>
+                <h4 class="mt-3">No activity yet</h4>
+                <p class="text-muted">Activity from your team's collaborations will appear here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

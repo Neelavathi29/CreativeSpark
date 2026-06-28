@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Cash Flow - Creative Spark{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="bi bi-cash-stack me-2 text-warning"></i>Cash Flow Forecast</h3>
+    <a href="{% url 'cash_flow_add' %}" class="btn btn-warning"><i class="bi bi-plus-circle me-2"></i>Add Entry</a>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <h3 class="text-success">+${{ total_inflow|default:"45,000" }}</h3>
+            <small class="text-muted">Total Inflow (MTD)</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <h3 class="text-danger">-${{ total_outflow|default:"32,000" }}</h3>
+            <small class="text-muted">Total Outflow (MTD)</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <h3 class="text-primary">${{ net_cash_flow|default:"13,000" }}</h3>
+            <small class="text-muted">Net Cash Flow</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <h3>${{ runway_months|default:"8.5" }} mo</h3>
+            <small class="text-muted">Runway</small>
+        </div>
+    </div>
+</div>
+<div class="glass-card p-4 mb-4">
+    <h5 class="mb-3"><i class="bi bi-graph-up me-2 text-warning"></i>Cash Flow Chart</h5>
+    <canvas id="cashFlowChart" height="250"></canvas>
+</div>
+<div class="glass-card p-4">
+    <h5 class="mb-3"><i class="bi bi-table me-2 text-warning"></i>Cash Flow Entries</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Type</th><th>Amount</th><th>Running Balance</th></tr></thead>
+            <tbody>
+                {% for entry in cash_flows %}
+                <tr>
+                    <td>{{ entry.date|date:"M d, Y" }}</td>
+                    <td><span class="badge bg-info">{{ entry.category }}</span></td>
+                    <td>{{ entry.description }}</td>
+                    <td><span class="badge bg-{% if entry.type == 'inflow' %}success{% else %}danger{% endif %}">{{ entry.get_type_display }}</span></td>
+                    <td class="{% if entry.type == 'inflow' %}text-success{% else %}text-danger{% endif %}">{% if entry.type == 'inflow' %}+{% else %}-{% endif %}${{ entry.amount }}</td>
+                    <td>${{ entry.running_balance }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">No cash flow entries yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('cashFlowChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+            { label: 'Inflow', data: [35000, 38000, 42000, 40000, 45000, 48000, 50000, 52000, 48000, 55000, 60000, 65000], backgroundColor: '#198754', borderRadius: 4 },
+            { label: 'Outflow', data: [28000, 30000, 31000, 29000, 32000, 33000, 35000, 34000, 36000, 38000, 40000, 42000], backgroundColor: '#dc3545', borderRadius: 4 }
+        ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+});
+</script>
+{% endblock %}

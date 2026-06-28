@@ -33,7 +33,17 @@
                 <li class="nav-item mt-2"><small class="text-muted px-3">AI FEATURES</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'ai_tools' %}"><i class="bi bi-robot"></i> AI Tools Hub</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'chatbot' %}"><i class="bi bi-chat-dots"></i> AI Chatbot</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'rag_chat' %}"><i class="bi bi-chat-square-text"></i> RAG Pitch Chat</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'voice_to_text' %}"><i class="bi bi-mic"></i> Voice to Text</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sentiment_analysis' %}"><i class="bi bi-emoji-smile"></i> Sentiment Analysis</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'tag_generator' %}"><i class="bi bi-tags"></i> Tag Generator</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'pitch_analyzer' %}"><i class="bi bi-easel"></i> Pitch Analyzer</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'elevator_pitch' %}"><i class="bi bi-mic"></i> Elevator Pitch</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'legal_checklist' %}"><i class="bi bi-check2-square"></i> Legal Checklist</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'terms_generator' %}"><i class="bi bi-file-text"></i> T&C Generator</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'pitch_deck_generator' %}"><i class="bi bi-file-earmark-slides"></i> Pitch Deck Gen</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'business_plan_generator' %}"><i class="bi bi-file-earmark-text"></i> Business Plan Gen</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ai_tools' %}"><i class="bi bi-radar"></i> Innovation Radar</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'set_language' %}"><i class="bi bi-translate"></i> Language</a></li>
 
                 <li class="nav-item mt-2"><small class="text-muted px-3">ECOSYSTEM</small></li>
@@ -42,7 +52,10 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'learning_resources' %}"><i class="bi bi-book"></i> Resources</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'job_board' %}"><i class="bi bi-briefcase"></i> Jobs</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'event_list' %}"><i class="bi bi-calendar-event"></i> Events</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'startup_map' %}"><i class="bi bi-globe"></i> Startup Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'startup_map' %}"><i class="bi bi-map"></i> Startup Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'world_startup_map' %}"><i class="bi bi-globe"></i> World Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'live_funding_tracker' %}"><i class="bi bi-cash-stack"></i> Live Funding Tracker</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'qr_portfolio' %}"><i class="bi bi-qr-code"></i> QR Portfolio</a></li>
 
                 <li class="nav-item mt-2"><small class="text-muted px-3">MENTORS & FUNDING</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'mentor_list' %}"><i class="bi bi-people"></i> Mentors</a></li>
@@ -58,15 +71,51 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'calendar_view' %}"><i class="bi bi-calendar"></i> Calendar</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'workspace_list' %}"><i class="bi bi-folder"></i> Workspaces</a></li>
 
+                <li class="nav-item mt-2"><small class="text-muted px-3">STARTUP TOOLS</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'canvas_list' %}"><i class="bi bi-grid-3x3-gap"></i> Canvases</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'whiteboard_list' %}"><i class="bi bi-easel"></i> Whiteboards</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shared_notes_list' %}"><i class="bi bi-journal-text"></i> Shared Notes</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'poll_list' %}"><i class="bi bi-bar-chart"></i> Polls</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'collab_timeline' %}"><i class="bi bi-clock-history"></i> Timeline</a></li>
+
+                <li class="nav-item mt-2"><small class="text-muted px-3">ANALYTICS</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'health_dashboard' %}"><i class="bi bi-heart-pulse"></i> Health Score</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'kpi_dashboard' %}"><i class="bi bi-speedometer2"></i> KPI Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'cash_flow' %}"><i class="bi bi-cash-stack"></i> Cash Flow</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'funding_timeline' %}"><i class="bi bi-graph-up"></i> Funding Timeline</a></li>
+
                 <li class="nav-item mt-2"><small class="text-muted px-3">GAMIFICATION</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'leaderboard' %}"><i class="bi bi-trophy"></i> Leaderboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'badges' %}"><i class="bi bi-award"></i> Badges</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'challenge_list' %}"><i class="bi bi-star"></i> Challenges</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'hall_of_fame' %}"><i class="bi bi-trophy-fill"></i> Hall of Fame</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'verified_badges' %}"><i class="bi bi-patch-check"></i> Verified Badges</a></li>
 
                 <li class="nav-item mt-2"><small class="text-muted px-3">COMMUNITY</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'showcase' %}"><i class="bi bi-star"></i> Showcase</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'success_stories' %}"><i class="bi bi-trophy"></i> Success Stories</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'podcast_list' %}"><i class="bi bi-mic"></i> Podcasts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'webinar_list' %}"><i class="bi bi-camera-video"></i> Webinars</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'forum_list' %}"><i class="bi bi-chat-square-text"></i> Forum</a></li>
+
+                <li class="nav-item mt-2"><small class="text-muted px-3">INVESTOR MODULE</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'watchlist' %}"><i class="bi bi-eye"></i> Watchlist</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'startup_comparison' %}"><i class="bi bi-arrow-left-right"></i> Compare Startups</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'startup_comparison' %}"><i class="bi bi-check2-square"></i> Due Diligence</a></li>
+
+                <li class="nav-item mt-2"><small class="text-muted px-3">BLOCKCHAIN</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'blockchain_dashboard' %}"><i class="bi bi-link-45deg"></i> Timestamps</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'verify_certificate' %}"><i class="bi bi-shield-check"></i> Verify Certificate</a></li>
+
+                <li class="nav-item mt-2"><small class="text-muted px-3">API & DEVELOPER</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'api_docs' %}"><i class="bi bi-code-slash"></i> API Docs</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'api_keys' %}"><i class="bi bi-key"></i> API Keys</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'api_webhooks_docs' %}"><i class="bi bi-webhook"></i> Webhooks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'api_integrations' %}"><i class="bi bi-puzzle"></i> Integrations</a></li>
+
+                <li class="nav-item mt-2"><small class="text-muted px-3">ACCESSIBILITY</small></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'accessibility_settings' %}"><i class="bi bi-universal-access"></i> Accessibility</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'keyboard_shortcuts' %}"><i class="bi bi-keyboard"></i> Shortcuts</a></li>
 
                 <li class="nav-item mt-2"><small class="text-muted px-3">SECURITY & REPORTS</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'security_settings' %}"><i class="bi bi-shield-lock"></i> Security</a></li>
@@ -76,6 +125,14 @@
                 {% if user.is_superuser or user.role == 'admin' %}
                 <li class="nav-item mt-2"><small class="text-muted px-3">ADMIN</small></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}"><i class="bi bi-shield-lock"></i> Admin Panel</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Admin Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'system_health' %}"><i class="bi bi-heart-pulse"></i> System Health</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'audit_logs' %}"><i class="bi bi-journal-code"></i> Audit Logs</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'email_templates' %}"><i class="bi bi-envelope"></i> Email Templates</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'site_config' %}"><i class="bi bi-gear"></i> Site Config</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'backup_list' %}"><i class="bi bi-cloud-arrow-down"></i> Backups</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'demo_mode' %}"><i class="bi bi-rocket-takeoff"></i> Load Demo Data</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'demo_info' %}"><i class="bi bi-info-circle"></i> Demo Info</a></li>
                 {% endif %}
             </ul>
             <div class="sidebar-footer">
@@ -113,6 +170,39 @@
                                 <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
                                 <option value="te" {% if request.LANGUAGE_CODE == 'te' %}selected{% endif %}>తె</option>
                                 <option value="hi" {% if request.LANGUAGE_CODE == 'hi' %}selected{% endif %}>हि</option>
+                                <option value="fr" {% if request.LANGUAGE_CODE == 'fr' %}selected{% endif %}>FR</option>
+                                <option value="es" {% if request.LANGUAGE_CODE == 'es' %}selected{% endif %}>ES</option>
+                                <option value="de" {% if request.LANGUAGE_CODE == 'de' %}selected{% endif %}>DE</option>
+                                <option value="it" {% if request.LANGUAGE_CODE == 'it' %}selected{% endif %}>IT</option>
+                                <option value="pt" {% if request.LANGUAGE_CODE == 'pt' %}selected{% endif %}>PT</option>
+                                <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>РУ</option>
+                                <option value="ja" {% if request.LANGUAGE_CODE == 'ja' %}selected{% endif %}>日</option>
+                                <option value="zh-hans" {% if request.LANGUAGE_CODE == 'zh-hans' %}selected{% endif %}>简</option>
+                                <option value="ar" {% if request.LANGUAGE_CODE == 'ar' %}selected{% endif %}>ع</option>
+                                <option value="ko" {% if request.LANGUAGE_CODE == 'ko' %}selected{% endif %}>한</option>
+                                <option value="tr" {% if request.LANGUAGE_CODE == 'tr' %}selected{% endif %}>TR</option>
+                                <option value="nl" {% if request.LANGUAGE_CODE == 'nl' %}selected{% endif %}>NL</option>
+                                <option value="pl" {% if request.LANGUAGE_CODE == 'pl' %}selected{% endif %}>PL</option>
+                                <option value="sv" {% if request.LANGUAGE_CODE == 'sv' %}selected{% endif %}>SV</option>
+                                <option value="da" {% if request.LANGUAGE_CODE == 'da' %}selected{% endif %}>DA</option>
+                                <option value="fi" {% if request.LANGUAGE_CODE == 'fi' %}selected{% endif %}>FI</option>
+                                <option value="nb" {% if request.LANGUAGE_CODE == 'nb' %}selected{% endif %}>NB</option>
+                                <option value="cs" {% if request.LANGUAGE_CODE == 'cs' %}selected{% endif %}>CS</option>
+                                <option value="ro" {% if request.LANGUAGE_CODE == 'ro' %}selected{% endif %}>RO</option>
+                                <option value="hu" {% if request.LANGUAGE_CODE == 'hu' %}selected{% endif %}>HU</option>
+                                <option value="el" {% if request.LANGUAGE_CODE == 'el' %}selected{% endif %}>ΕΛ</option>
+                                <option value="th" {% if request.LANGUAGE_CODE == 'th' %}selected{% endif %}>TH</option>
+                                <option value="vi" {% if request.LANGUAGE_CODE == 'vi' %}selected{% endif %}>VI</option>
+                                <option value="id" {% if request.LANGUAGE_CODE == 'id' %}selected{% endif %}>ID</option>
+                                <option value="ms" {% if request.LANGUAGE_CODE == 'ms' %}selected{% endif %}>MS</option>
+                                <option value="ta" {% if request.LANGUAGE_CODE == 'ta' %}selected{% endif %}>த</option>
+                                <option value="bn" {% if request.LANGUAGE_CODE == 'bn' %}selected{% endif %}>বা</option>
+                                <option value="gu" {% if request.LANGUAGE_CODE == 'gu' %}selected{% endif %}>ગુ</option>
+                                <option value="kn" {% if request.LANGUAGE_CODE == 'kn' %}selected{% endif %}>ಕ</option>
+                                <option value="ml" {% if request.LANGUAGE_CODE == 'ml' %}selected{% endif %}>മ</option>
+                                <option value="mr" {% if request.LANGUAGE_CODE == 'mr' %}selected{% endif %}>म्र</option>
+                                <option value="pa" {% if request.LANGUAGE_CODE == 'pa' %}selected{% endif %}>ਪੰ</option>
+                                <option value="ur" {% if request.LANGUAGE_CODE == 'ur' %}selected{% endif %}>اُ</option>
                             </select>
                         </form>
 
